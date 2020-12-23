@@ -12,6 +12,11 @@ with open('authors.txt') as fp:
   for author in fp:
     authors.append(str(author))
 
+drinks = []
+with open('drinks.txt') as fp:
+  for drink in fp:
+    drinks.append(str(drink))
+
 def get_random(arr):
   return arr[random.randint(0,len(arr)-1)]
 
@@ -32,7 +37,7 @@ async def on_message(message):
   if message.content.startswith("$wait"):
     await message.channel.send("A guy in a black cloak makes secret hand signals in your direction.")
   elif message.content.startswith("$drink"):
-    await message.channel.send("Maxene gives you a Dragonbreath Ale")
+    await message.channel.send("Maxene gives you a " + get_random(drinks))
   elif message.content.startswith("$quote"):
     quote = get_quote()
     await message.channel.send(quote)
@@ -41,12 +46,14 @@ async def on_message(message):
     if len(message.content) > 7:
       add = int(message.content[7:])
     author = message.author.name
-    if author in db.keys():
-      db[author] = db[author]+add
+    server = str(message.guild.id)
+    key = author+server
+    if key in db.keys():
+      db[key] = db[key]+add
     else:
-      db[author] = add
+      db[key] = add
     
-    await message.channel.send("Hello {name} your current balance is {value} gold!".format(name=author,value=db[author]))
+    await message.channel.send("Hello {name} your current balance is {value} gold!".format(name=author,value=db[key]))
 
 
 
