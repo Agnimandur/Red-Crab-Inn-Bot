@@ -4,12 +4,14 @@ import time
 from datetime import timedelta
 import random
 
-def leaderboard(server):
+#[score,user id]
+def leaderboard(guild):
   temp = []
-  start = "REAPER SCORE "+server+" "
+  server = str(guild.id)
   for key in db.keys():
-    if key.startswith(start):
-      temp.append([db[key],key[len(start):]])
+    if key.startswith(server):
+      userID = int(key[len(server)+1:])
+      temp.append([db[key][1],userID])
   temp.sort(reverse=True)
   return temp
 
@@ -31,15 +33,17 @@ def getmodifier():
 def getfree():
   return random.randint(1,50)==1
   
-
+#keys are server id + " " + user id
+#values are (time,score) tuples
+#gamekey is "REAPER GAME "+server and gamevalue is (current time, time between reaps)
 async def reaper(message):
   response=""
+  yourID = str(message.author.id)
   author = str(message.author.name)
   server = str(message.guild.id)
   game = "REAPER GAME "+server
-  reapTime = "REAPER TIME "+server
-  yourScore = "REAPER SCORE "+server+" "+author
-  yourTime = "REAPER LAST "+server+" "+author
+  yourInfo = server + " " + yourID
+
   currentTime = int(round(time.time() * 1000))
   admin = False
   for role in message.author.roles:
@@ -47,18 +51,18 @@ async def reaper(message):
       admin = True
       break
   text = message.content.lower()
-  if admin and text=='begin game' and game not in db.keys():
-    db[game] = currentTime
+  if admin and text.startswith('begin game ') and game not in db.keys():
     try:
-      db[reapTime] = int(message.content[10:])
+      db[game] = (currentTime,float(message.content[11:]))
     except:
-      db[reapTime] = 12
+      db[game] = (currentTime,12)
+
     response = """**The game has begun!**
     - To play, simply type in reap to make your first reap!
     - The time between reaps is {between} hours.
     - For the rules and objectives, check out <https://artofproblemsolving.com/reaper>. 
     - Talk to the mods for additional information.
-    """.format(between=db[reapTime])
+    """.format(between=db[game][1])
     return response
   elif text == 'help':
     response = """
@@ -77,58 +81,60 @@ Contestant (these only work in the #reaper channel):
   if game not in db.keys():
     return response
   if admin and text == 'end game':
-    rankList = leaderboard(server)
+    rankList = leaderboard(message.guild)
     champion = 482581806143766529
     if len(rankList)>0:
-      champion = await message.guild.query_members(rankList[0][1])
-      champion = champion[0].id
+      champion = rankList[0][1]
 
     for key in db.keys():
-      if key.startswith("REAPER SCORE "+server+" ") or key.startswith("REAPER LAST "+server+" "):
+      if key.startswith(server):
         del db[key]
     del db[game]
-    del db[reapTime]
     response = """**The game is over!**
     - The winner is <@{champion}>!!
     - Final standings are available in the attached file.
     - Talk to the mods for more details.
     """.format(champion=champion)
   elif text == 'reap':
-    if yourTime in db.keys() and currentTime-db[yourTime] < db[reapTime]*3600000:
-      remaining = db[reapTime]*3600000-(currentTime-db[yourTime])
+    if yourInfo in db.keys() and currentTime-db[yourInfo][0] < db[game][1]*3600000:
+      remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
       delta = timedelta(seconds=remaining//1000)
-      response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=message.author.id,delta=str(delta))
+      response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=str(delta))
     else:
-      score = currentTime - db[game]
+      score = currentTime - db[game][0]
       modifier = getmodifier()
       free = getfree()
-      if yourScore not in db.keys():
-        db[yourScore] = 0
-      db[yourScore] += modifier*score
+      newScore = score*modifier
+      if yourInfo in db.keys():
+        newScore += db[yourInfo][1]
+      newTime = currentTime
+      if free:
+        newTime = 0
+
       bonus = ""
       if modifier > 1:
         bonus = "You also got a {mod}x reap".format(mod=modifier)
         if free:
           bonus += "and a free reap!!"
         bonus += "!"
-      response = "Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score)+bonus
-      db[game] = currentTime
-      if not free:
-        db[yourTime] = currentTime
+      response = "Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score*modifier)+bonus
+      db[game] = (currentTime,db[game][1])
+      db[yourInfo] = (newTime,newScore)
   elif text=='timer':
-    points = currentTime - db[game]
+    points = currentTime - db[game][0]
     response = "The current reap time is {points} milliseconds.".format(points=points)
   elif text=='leaderboard':
-    rankList = leaderboard(server)
+    rankList = leaderboard(message.guild)
     response = "**Reaper Leaderboard**\n"
     for i in range(0,min(len(rankList),10)):
-      add = "{pos}. {name} with {points} points\n".format(pos=i+1,name=rankList[i][1],points=rankList[i][0])
+      member = await message.guild.fetch_member(rankList[i][1])
+      add = "{pos}. {name} with {points} points\n".format(pos=i+1,name=member.name,points=rankList[i][0])
       response += add
   elif text=='rank':
-    if yourScore not in db.keys():
-      response = "Hi <@{author}>, make a reap to join the game!".format(author=message.author.id)
+    if yourInfo not in db.keys():
+      response = "Hi <@{author}>, make a reap to join the game!".format(author=yourID)
     else:
-      rankList = [x[1] for x in leaderboard(server)]
-      rank = rankList.index(author)+1
-      response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=message.author.id,score=db[yourScore],rank=str(rank),total=str(len(rankList)))
+      rankList = [x[1] for x in leaderboard(message.guild)]
+      rank = rankList.index(int(yourID))+1
+      response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
   return response
