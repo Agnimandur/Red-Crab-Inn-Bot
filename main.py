@@ -8,14 +8,6 @@ from keep_alive import keep_alive
 from reaper import reaper
 client = discord.Client()
 
-drinks = []
-with open('drinks.txt') as fp:
-  for drink in fp:
-    drinks.append(str(drink))
-
-def get_random(arr):
-  return arr[random.randint(0,len(arr)-1)]
-
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
   json_data = json.loads(response.text)
@@ -24,7 +16,7 @@ def get_quote():
 
 @client.event
 async def on_ready():
-  print("We have logged in as {0.user}".format(client))
+  print("Successful login as {0.user}".format(client))
 
 @client.event
 async def on_message(message):
@@ -50,40 +42,16 @@ async def on_message(message):
       await message.guild.create_text_channel('reaper')
       await message.guild.create_role(name='reaper-admin')
       await message.channel.send("Reaper channel and reaper-admin role created!")
-  if message.content.startswith("$wait"):
-    await message.channel.send("A guy in a black cloak makes secret hand signals in your direction.")
-  elif message.content.startswith("$drink"):
-    await message.channel.send("Maxene gives you a " + get_random(drinks))
-  elif message.content.startswith("$quote"):
+  if message.content.startswith('$quote'):
     quote = get_quote()
     await message.channel.send(quote)
-  elif message.content.startswith("$money"):
-    add = 0
-    if len(message.content) > 7:
-      try:
-        add = int(message.content[7:])
-      except:
-        add = 0
-    author = message.author.name
-    server = str(message.guild.id)
-    key = author+server
-    if key in db.keys():
-      db[key] = db[key]+add
-    else:
-      db[key] = add
-    
-    await message.channel.send("Hello {name} your current balance is {value} gold!".format(name=author,value=db[key]))
   elif message.content.lower() == 'help':
-    response = """
-    ```
+    response = """```
 Reaper Setup:
-  $reaper            An admin can run this command to initialize the Reaper channel in a server.
+  $reaper            Initialize the Reaper channel in a server.
 Miscellaneous:
   $quote             Receive an inspirational quote.
-  $drink             Maxene will give you a drink.
-  $money [x]         Get free money!!!
-    ```
-    """
+    ```"""
     await message.channel.send(response)
 
 
