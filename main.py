@@ -5,6 +5,7 @@ import json
 import random
 from replit import db
 from keep_alive import keep_alive
+from reaper import reaper
 client = discord.Client()
 
 authors = []
@@ -34,6 +35,25 @@ async def on_ready():
 async def on_message(message):
   if message.author == client.user:
     return
+  if message.channel.name=='reaper':
+    response = await reaper(message)
+    if len(response) > 0:
+      botMessage = await message.channel.send(response)
+      if (botMessage.content.startswith("**The game has begun!**")):
+        await botMessage.pin()
+    return
+  if message.content == '$reaper':
+    reaperID = 0
+    allChannels = await message.guild.fetch_channels()
+    for c in allChannels:
+      if c.name=='reaper':
+        reaperID = c.id
+        break
+    if reaperID != 0:
+      await message.channel.send("Reaper channel already exists. Go to <#{reaperID}>.".format(reaperID=reaperID))
+    else:
+      channel = await message.guild.create_text_channel('reaper')
+      await message.channel.send("Reaper Channel Created!")
   if message.content.startswith("$wait"):
     await message.channel.send("A guy in a black cloak makes secret hand signals in your direction.")
   elif message.content.startswith("$drink"):
@@ -44,7 +64,10 @@ async def on_message(message):
   elif message.content.startswith("$money"):
     add = 0
     if len(message.content) > 7:
-      add = int(message.content[7:])
+      try:
+        add = int(message.content[7:])
+      except:
+        add = 0
     author = message.author.name
     server = str(message.guild.id)
     key = author+server
