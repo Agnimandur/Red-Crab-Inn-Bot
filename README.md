@@ -1,6 +1,7 @@
+![Reaper Logo](reaper.png)
+
 # Red-Crab-Inn-Bot
 Code for a discord bot built in python on repl.it. Due to integration with UptimeRobot, this bot will run continuously!
-
 The primary function of the bot is to play the game *Reaper*, a math game created by folks at AOPS.
 
 #### $reaper
