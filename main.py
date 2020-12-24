@@ -8,11 +8,6 @@ from keep_alive import keep_alive
 from reaper import reaper
 client = discord.Client()
 
-authors = []
-with open('authors.txt') as fp:
-  for author in fp:
-    authors.append(str(author))
-
 drinks = []
 with open('drinks.txt') as fp:
   for drink in fp:
@@ -24,7 +19,7 @@ def get_random(arr):
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
   json_data = json.loads(response.text)
-  quote = '"' + json_data[0]['q'] + '"' + " - " + get_random(authors)
+  quote = '"' + json_data[0]['q'] + '"' + " - " + json_data[0]['a']
   return quote
 
 @client.event
@@ -52,8 +47,9 @@ async def on_message(message):
     if reaperID != 0:
       await message.channel.send("Reaper channel already exists. Go to <#{reaperID}>.".format(reaperID=reaperID))
     else:
-      channel = await message.guild.create_text_channel('reaper')
-      await message.channel.send("Reaper Channel Created!")
+      await message.guild.create_text_channel('reaper')
+      await message.guild.create_role(name='reaper-admin')
+      await message.channel.send("Reaper channel and reaper-admin role created!")
   if message.content.startswith("$wait"):
     await message.channel.send("A guy in a black cloak makes secret hand signals in your direction.")
   elif message.content.startswith("$drink"):
@@ -77,6 +73,18 @@ async def on_message(message):
       db[key] = add
     
     await message.channel.send("Hello {name} your current balance is {value} gold!".format(name=author,value=db[key]))
+  elif message.content.lower() == 'help':
+    response = """
+    ```
+Reaper Setup:
+  $reaper            An admin can run this command to initialize the Reaper channel in a server.
+Miscellaneous:
+  $quote             Receive an inspirational quote.
+  $drink             Maxene will give you a drink.
+  $money [x]         Get free money!!!
+    ```
+    """
+    await message.channel.send(response)
 
 
 
