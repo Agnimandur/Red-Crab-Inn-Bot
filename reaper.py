@@ -51,7 +51,7 @@ async def reaper(message):
       admin = True
       break
   text = message.content.lower()
-  if admin and text.startswith('begin game ') and game not in db.keys():
+  if admin and (text.startswith('begin game ') or text=='begin game') and game not in db.keys():
     try:
       db[game] = (currentTime,float(message.content[11:]))
     except:
