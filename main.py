@@ -53,6 +53,8 @@ async def on_message(message):
     response = """```
 Reaper Setup:
   $reaper            Initialize the Reaper channel in a server.
+  
+  All Reaper related commands can only be done in the #reaper channel.
 
 Miscellaneous:
   $quote             Receive an inspirational quote.
