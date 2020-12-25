@@ -1,9 +1,9 @@
-[<img alt="reaper logo" src="reaper.png">](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=537390192&scope=bot)
+[<img alt="reaper logo" src="reaper.png">](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=2080894065&scope=bot)
 # Red Crab Inn Discord Bot
 Code for a discord bot built in python on repl.it. Due to integration with UptimeRobot, this bot will run continuously!
 The primary function of the bot is to play the game *[Reaper](https://artofproblemsolving.com/reaper)*, a math game created by folks at AOPS.
 
-To add this bot to your discord server, use **[this link](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=537390192&scope=bot)**.
+To add this bot to your discord server, use **[this link](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=2080894065&scope=bot)**.
 
 #### $quote
 Receive an inspirational quote!
