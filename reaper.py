@@ -7,7 +7,7 @@ import random
 
 #default parameters
 H = 12 #12 hours between reaps
-P = 43200000 #first to reap 12 hours
+P = 43200 #first to reap 12 hours
 
 async def sendLogo(channel):
   await channel.send(file=discord.File("reaper.png"))
@@ -49,7 +49,7 @@ def openingcrawl(game):
     - The time between reaps is {between} hours.
     - Reap {delta} ({win} points) to win!.
     - Talk to the mods for additional information.
-    """.format(between=db[game][1],delta=str(timedelta(milliseconds=1000*(db[game][2]//1000))),win=db[game][2])
+    """.format(between=db[game][1],delta=str(timedelta(seconds=db[game][2])),win=db[game][2])
 
 async def endgame(message):
   server = str(message.guild.id)
@@ -66,7 +66,7 @@ async def endgame(message):
 
   result = "RESULTS"+server+".txt"
   f = open(result,"w+")
-  f.write(message.guild.name + " Reaper Final Standings: \n")
+  f.write(message.guild.name + " Final Standings: \n")
   for person in rankList:
     member = await message.guild.fetch_member(person[1])
     f.write(member.name + " with " + str(person[0]) + " points\n")
@@ -112,7 +112,7 @@ async def reaper(message):
         cooldown = H
     if pi < len(text):
       try:
-        towin = max(10000,int(text[pi+2:]))
+        towin = max(10,int(text[pi+2:]))
       except:
         towin = P
     db[game] = (currentTime,cooldown,towin,0)
@@ -159,7 +159,7 @@ Contestant (these only work in the #reaper channel):
       pass
   elif admin and text.startswith('p='):
     try:
-      db[game] = (db[game][0],db[game][1],max(10000,int(text[2:])),db[game][3])
+      db[game] = (db[game][0],db[game][1],max(10,int(text[2:])),db[game][3])
       response = "Points to win updated to {p} points.".format(p=db[game][2])
       beginMessage = await message.channel.fetch_message(db[game][3])
       if beginMessage != None: 
@@ -172,7 +172,7 @@ Contestant (these only work in the #reaper channel):
       delta = timedelta(seconds=remaining//1000)
       response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=str(delta))
     else:
-      score = currentTime - db[game][0]
+      score = (currentTime - db[game][0])//1000
       modifier = getmodifier()
       free = getfree()
       newScore = score*modifier
@@ -196,8 +196,8 @@ Contestant (these only work in the #reaper channel):
       if newScore >= db[game][2]:
         await endgame(message)
   elif text=='timer':
-    points = currentTime - db[game][0]
-    response = "The current reap time is {points} milliseconds.".format(points=points)
+    points = (currentTime - db[game][0])//1000
+    response = "The current reap time is {points} seconds.".format(points=points)
   elif text=='leaderboard':
     rankList = leaderboard(message.guild)
     response = "**Reaper Leaderboard**\n"
