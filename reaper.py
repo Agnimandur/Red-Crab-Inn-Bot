@@ -141,7 +141,7 @@ Contestant (these only work in the #reaper channel):
 
   timer              The current value of a reap.
 
-  rank               Your current rank in the ongoing game.
+  rank=[name]        Your current rank in the ongoing game. If [name] is given, it finds the scores of all players with that [name].
 
   leaderboard        The current top 10 leaderboard.
     ```
@@ -222,4 +222,16 @@ Contestant (these only work in the #reaper channel):
       rankList = [x[1] for x in leaderboard(message.guild)]
       rank = rankList.index(int(yourID))+1
       response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
+  elif text.startswith('rank='):
+    search = message.content[5:]
+    members = await message.guild.query_members(search,limit=5)
+    if len(members)>0:
+      for member in members:
+        hisInfo = server + " " + str(member.id)
+        try:
+          response += "{name} currently has {score} points.\n".format(name=member.name,score=db[hisInfo][1])
+        except:
+          response += member.name+" has not reaped in this game yet.\n"
+    else:
+      response = search+" is not in this server."
   return response
