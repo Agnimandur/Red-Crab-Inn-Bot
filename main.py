@@ -20,13 +20,15 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-  if message.author == client.user:
+  game = "REAPER GAME "+str(message.guild.id)
+  if message.author.bot:
     return
   if message.channel.name=='reaper':
     response = await reaper(message)
     if len(response) > 0:
       botMessage = await message.channel.send(response)
       if (botMessage.content.startswith("**The game has begun!**")):
+        db[game] = (db[game][0],db[game][1],db[game][2],botMessage.id)
         await botMessage.pin()
     return
   if message.content == '$reaper':
@@ -42,15 +44,20 @@ async def on_message(message):
       await message.guild.create_text_channel('reaper')
       await message.guild.create_role(name='reaper-admin')
       await message.channel.send("Reaper channel and reaper-admin role created!")
-  if message.content.startswith('$quote'):
+  if message.content == '$quote':
     quote = get_quote()
     await message.channel.send(quote)
+  elif message.content == '$github':
+    await message.channel.send("https://github.com/Agnimandur/Red-Crab-Inn-Bot")
   elif message.content.lower() == 'help':
     response = """```
 Reaper Setup:
   $reaper            Initialize the Reaper channel in a server.
+
 Miscellaneous:
   $quote             Receive an inspirational quote.
+  
+  $github            Get a link to the bot's github page.
     ```"""
     await message.channel.send(response)
 
