@@ -69,7 +69,8 @@ async def endgame(message):
   f.write(message.guild.name + " Final Standings: \n")
   for person in rankList:
     member = await message.guild.fetch_member(person[1])
-    f.write(member.name + " with " + str(person[0]) + " points\n")
+    if member != None:
+      f.write(member.name + " with " + str(person[0]) + " points\n")
   f.close()
 
   response = """**The game is over!**
@@ -169,7 +170,7 @@ Contestant (these only work in the #reaper channel):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif text == 'reap':
+  elif text.startswith('reap'):
     if yourInfo in db.keys() and currentTime-db[yourInfo][0] < db[game][1]*3600000:
       remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
       delta = timedelta(seconds=remaining//1000)
@@ -204,11 +205,16 @@ Contestant (these only work in the #reaper channel):
   elif text=='leaderboard':
     rankList = leaderboard(message.guild)
     response = "**Reaper Leaderboard**\n"
-    for i in range(0,min(len(rankList),10)):
-      member = await message.guild.fetch_member(rankList[i][1])
-      blank = 25-len(member.name)
-      add = "{pos}. {name}".format(pos=i+1,name=member.name) + " "*blank + "{points} pts\n".format(points=rankList[i][0])
+    i = 0
+    for person in rankList:
+      if i==min(len(rankList),10):
+        break
+      member = await message.guild.fetch_member(person[1])
+      if member==None:
+        continue
+      add = "{pos}. {name} with {points} pts\n".format(pos=i+1,member.name,points=person[0])
       response += add
+      i += 1
   elif text=='rank':
     if yourInfo not in db.keys():
       response = "Hi <@{author}>, make a reap to join the game!".format(author=yourID)
