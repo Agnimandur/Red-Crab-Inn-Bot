@@ -9,20 +9,23 @@ import random
 H = 12 #12 hours between reaps
 P = 43200 #first to reap 12 hours
 
+#send the reaper logo
 async def sendLogo(channel):
   await channel.send(file=discord.File("reaper.png"))
 
-#[score,user id]
+#build the leaderboard
 def leaderboard(guild):
   temp = []
   server = str(guild.id)
   for key in db.keys():
     if key.startswith(server):
+      #[score,user id]
       userID = int(key[len(server)+1:])
       temp.append([db[key][1],userID])
   temp.sort(reverse=True)
   return temp
 
+#determine the modifier to the score (odds provided by kevinmathz)
 def getmodifier():
   d1000 = random.randint(1,1000)
   if d1000 <= 100:
@@ -38,9 +41,11 @@ def getmodifier():
   else:
     return 1
 
+#is this a free reap?
 def getfree():
   return (random.randint(1,50)==1)
 
+#the begin game message (can be edited later on)
 def openingcrawl(game):
   return """**The game has begun!**
     - To play, simply type in reap to make your first reap!
@@ -51,26 +56,32 @@ def openingcrawl(game):
     - Talk to the mods for additional information.
     """.format(between=db[game][1],delta=str(timedelta(seconds=db[game][2])),win=db[game][2])
 
+#End the game
 async def endgame(message):
   server = str(message.guild.id)
   game = "REAPER GAME "+server
+  filename = message.guild.name + " Final Standings.txt"
+
   rankList = leaderboard(message.guild)
   champion = 482581806143766529
   if len(rankList)>0:
     champion = rankList[0][1]
 
+  #clear the database of this game's keys
   for key in db.keys():
     if key.startswith(server):
       del db[key]
   del db[game]
 
+  #create a file for final results
   result = "RESULTS"+server+".txt"
   f = open(result,"w+")
   f.write(message.guild.name + " Final Standings: \n")
   for person in rankList:
     member = await message.guild.fetch_member(person[1])
     if member != None:
-      f.write(member.mention + " with " + str(person[0]) + " points\n")
+
+      f.write(member.name + "#" + member.discriminator + " with " + str(person[0]) + " points\n")
   f.close()
 
   response = """**The game is over!**
@@ -79,12 +90,14 @@ async def endgame(message):
   - Talk to the mods for more details.
   """.format(champion=champion)
 
-  await message.channel.send(content=response,file=discord.File(result))
+  #send the message and file
+  await message.channel.send(content=response,file=discord.File(result,filename=filename))
   
 #keys are server id + " " + user id
 #values are (time,score) tuples
 #gamekey is "REAPER GAME "+server and gamevalue is (current time, time between reaps, points to win, begin-game-message-id)
 async def reaper(message):
+  #senders info
   response=""
   yourID = str(message.author.id)
   author = str(message.author.nick)
@@ -92,7 +105,10 @@ async def reaper(message):
   game = "REAPER GAME "+server
   yourInfo = server + " " + yourID
 
+  #get the time
   currentTime = int(round(time.time() * 1000))
+
+  #check if the user is an admin
   admin = False
   for role in message.author.roles:
     if role.name == 'reaper-admin':
@@ -101,7 +117,11 @@ async def reaper(message):
   #Reaper Test Server Only1
   if message.guild.id==791479138447917076:
     admin = True
+  
+  #content of the user's message
   text = message.content.lower()
+
+  #begin the game (check parameters)
   if admin and text.startswith('begin game') and game not in db.keys():
     cooldown = H
     towin = P
@@ -119,10 +139,12 @@ async def reaper(message):
         towin = max(10,int(text[pi+2:]))
       except:
         towin = P
+    #add game to database
     db[game] = (currentTime,cooldown,towin,0)
     
     await sendLogo(message.channel)
     return openingcrawl(game)
+  #build the help box in markdown
   elif text == 'help':
     response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
 Admin:
@@ -152,9 +174,12 @@ Contestant (these only work in the #reaper channel):
   if game not in db.keys():
     return response
 
-  #Ongoing game commands
+  #These commands only work in ongoing games
+  #end the game
   if admin and text == 'end game':
     await endgame(message)
+  #change the number of hours between reaps or the points needed to win (try/except statements to check valid inputs)
+  #update the database (tuples are immutable!)
   elif admin and text.startswith('h='):
     try:
       db[game] = (db[game][0],max(0.001,float(text[2:])),db[game][2],db[game][3])
@@ -173,12 +198,15 @@ Contestant (these only work in the #reaper channel):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
+  #reap!
   elif text.startswith('reap'):
+    #can't reap
     if yourInfo in db.keys() and currentTime-db[yourInfo][0] < db[game][1]*3600000:
       remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
       delta = timedelta(seconds=remaining//1000)
       response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=str(delta))
     else:
+      #get scoring info
       modifier = getmodifier()
       free = getfree()
       score = (modifier*(currentTime - db[game][0]))//1000
@@ -188,7 +216,8 @@ Contestant (these only work in the #reaper channel):
       newTime = currentTime
       if free:
         newTime = 0
-
+      
+      #send results
       bonus = ""
       if modifier > 1:
         bonus = "You also got a {mod}x reap".format(mod=modifier)
@@ -197,14 +226,18 @@ Contestant (these only work in the #reaper channel):
         bonus += "!"
       await message.channel.send("Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score)+bonus)
 
+      #update database with your time and score
       db[game] = (currentTime,db[game][1],db[game][2],db[game][3])
       db[yourInfo] = (newTime,newScore)
       response = ""
+      #check for a winner
       if newScore >= db[game][2]:
         await endgame(message)
+  #get the current reap time
   elif text=='timer':
     points = (currentTime - db[game][0])//1000
     response = "The current reap time is {points} seconds.".format(points=points)
+  #print out a top10 current leaderboard
   elif text=='leaderboard':
     rankList = leaderboard(message.guild)
     response = "**Reaper Leaderboard**\n"
@@ -212,12 +245,14 @@ Contestant (these only work in the #reaper channel):
     for person in rankList:
       if i==min(len(rankList),10):
         break
+      #skip people who aren't in the server anymore
       member = await message.guild.fetch_member(person[1])
       if member==None:
         continue
       add = "{pos}. {name} with {points} pts\n".format(pos=i+1,name=member.nick if member.nick != None else member.name,points=person[0])
       response += add
       i += 1
+  #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():
       response = "Hi <@{author}>, make a reap to join the game!".format(author=yourID)
@@ -225,13 +260,16 @@ Contestant (these only work in the #reaper channel):
       rankList = [x[1] for x in leaderboard(message.guild)]
       rank = rankList.index(int(yourID))+1
       response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
+  #find the scores of other people
   elif text.startswith('rank='):
     search = message.content[5:]
+    #all members whose names start with "search"
     members = await message.guild.query_members(search,limit=5)
     if len(members)>0:
       for member in members:
         hisInfo = server + " " + str(member.id)
         hisName = member.name if member.nick==None else member.nick
+        #check if they're in the game or not
         try:
           response += "{name} currently has {score} points.\n".format(name=hisName,score=db[hisInfo][1])
         except:
