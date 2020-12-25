@@ -70,7 +70,7 @@ async def endgame(message):
   for person in rankList:
     member = await message.guild.fetch_member(person[1])
     if member != None:
-      f.write(member.name + " with " + str(person[0]) + " points\n")
+      f.write(member.mention + " with " + str(person[0]) + " points\n")
   f.close()
 
   response = """**The game is over!**
@@ -87,7 +87,7 @@ async def endgame(message):
 async def reaper(message):
   response=""
   yourID = str(message.author.id)
-  author = str(message.author.name)
+  author = str(message.author.nick)
   server = str(message.guild.id)
   game = "REAPER GAME "+server
   yourInfo = server + " " + yourID
@@ -124,26 +124,29 @@ async def reaper(message):
     await sendLogo(message.channel)
     return openingcrawl(game)
   elif text == 'help':
-    response = """
-    ```
+    response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
 Admin:
-  begin game h=[h] p=[p]
-                     Begin the game! Reap cooldown is [h], points to win is [p]
+  begin game h=[h] p=[p]      Begin the game! Reap cooldown is [h], 
+                    and points to win is [p].
                     
-  h=[h]              Change the reap cooldown to [h].
+  h=[h]             Change the reap cooldown to [h].
 
-  p=[p]              Change the points needed to win to [p].
+  p=[p]             Change the points needed to win to [p].
 
-  end game           End the game manually.
+  end game          End the game manually.
     
 Contestant (these only work in the #reaper channel):
-  reap               Anyone can Reap and gain points! There is a cooldown.
+  reap              Reap to gain points! The points are equal to the time
+                    difference between your reap and the most recent reap.
+                    There is a cooldown, so reap wisely to maximize points!
+                    Avoid getting "sniped" and wasting precious reaps.
 
-  timer              The current value of a reap.
+  timer             The current value of a reap.
 
-  rank=[name]        Your current rank in the ongoing game. If [name] is given, it finds the scores of all players with that [name].
+  rank=[name]       Your current rank in the ongoing game. If [name] is given,
+                    it finds the scores of aLL players with that [name].
 
-  leaderboard        The current top 10 leaderboard.
+  leaderboard       The current top 10 leaderboard.
     ```
     """
   if game not in db.keys():
@@ -212,7 +215,7 @@ Contestant (these only work in the #reaper channel):
       member = await message.guild.fetch_member(person[1])
       if member==None:
         continue
-      add = "{pos}. {name} with {points} pts\n".format(pos=i+1,name=member.name,points=person[0])
+      add = "{pos}. {name} with {points} pts\n".format(pos=i+1,name=member.nick if member.nick != None else member.name,points=person[0])
       response += add
       i += 1
   elif text=='rank':
@@ -228,10 +231,11 @@ Contestant (these only work in the #reaper channel):
     if len(members)>0:
       for member in members:
         hisInfo = server + " " + str(member.id)
+        hisName = member.name if member.nick==None else member.nick
         try:
-          response += "{name} currently has {score} points.\n".format(name=member.name,score=db[hisInfo][1])
+          response += "{name} currently has {score} points.\n".format(name=hisName,score=db[hisInfo][1])
         except:
-          response += member.name+" has not reaped in this game yet.\n"
+          response += hisName + " has not reaped in this game yet.\n"
     else:
       response = search+" is not in this server."
   return response
