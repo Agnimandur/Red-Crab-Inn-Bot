@@ -15,6 +15,13 @@ def get_quote():
   quote = '"' + json_data[0]['q'] + '"' + " - " + json_data[0]['a']
   return quote
 
+#get a random Donald Trump quote from an api
+def get_trump():
+  response = requests.get("https://tronalddump.io/random/quote")
+  json_data = json.loads(response.text)
+  quote = '"'+json_data['value']+'" \n *Date: {date}*'.format(date=json_data['appeared_at'][:10])
+  return quote
+
 #the bot is online now!
 @client.event
 async def on_ready():
@@ -60,6 +67,10 @@ async def on_message(message):
   #get a quote
   if message.content == '$quote':
     quote = get_quote()
+    await message.channel.send(quote)
+  #get a trump quote
+  elif message.content == '$trump':
+    quote = get_trump()
     await message.channel.send(quote)
   #send a link to the github
   elif message.content == '$github':
