@@ -43,10 +43,10 @@ async def on_message(message):
     else:
       try:
         await message.guild.create_text_channel('reaper')
-        await message.guild.create_role(name='reaper-admin')
+        await message.guild.create_role(name='reaper-admin',mentionable=True)
         await message.channel.send("Reaper channel and reaper-admin role created!")
       except:
-        await message.channel.send("Unable to comply. The bot doesn't have the required permission.")
+        await message.channel.send("Unable to comply. The bot doesn't have the required permission. 😭😭")
   if message.content == '$quote':
     quote = get_quote()
     await message.channel.send(quote)
