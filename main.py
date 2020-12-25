@@ -41,9 +41,12 @@ async def on_message(message):
     if reaperID != 0:
       await message.channel.send("Reaper channel already exists. Go to <#{reaperID}>.".format(reaperID=reaperID))
     else:
-      await message.guild.create_text_channel('reaper')
-      await message.guild.create_role(name='reaper-admin')
-      await message.channel.send("Reaper channel and reaper-admin role created!")
+      try:
+        await message.guild.create_text_channel('reaper')
+        await message.guild.create_role(name='reaper-admin')
+        await message.channel.send("Reaper channel and reaper-admin role created!")
+      except:
+        await message.channel.send("Unable to comply. The bot doesn't have the required permission.")
   if message.content == '$quote':
     quote = get_quote()
     await message.channel.send(quote)
@@ -53,7 +56,7 @@ async def on_message(message):
     response = """```
 Reaper Setup:
   $reaper            Initialize the Reaper channel in a server.
-  
+
   All Reaper related commands can only be done in the #reaper channel.
 
 Miscellaneous:
