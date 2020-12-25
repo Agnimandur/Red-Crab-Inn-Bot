@@ -143,7 +143,7 @@ async def reaper(message):
     db[game] = (currentTime,cooldown,towin,0)
     
     await sendLogo(message.channel)
-    return openingcrawl(game)
+    return openingcrawl(game),True
   #build the help box in markdown
   elif text == 'help':
     response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
@@ -172,7 +172,7 @@ Contestant (these only work in the #reaper channel):
     ```
     """
   if game not in db.keys():
-    return response
+    return response,False
 
   #These commands only work in ongoing games
   #end the game
@@ -276,4 +276,4 @@ Contestant (these only work in the #reaper channel):
           response += hisName + " has not reaped in this game yet.\n"
     else:
       response = search+" is not in this server."
-  return response
+  return response,False
