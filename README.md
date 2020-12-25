@@ -9,6 +9,10 @@ To add this bot to your discord server, use **[this link](https://discord.com/ap
 An admin can type $reaper to create a reaper channel in your discord server.
 The following commands only work in the #reaper channel.
 
+#### $github
+Get a link directly to this Github repository!
+
+## Admin Commands
 #### begin game h=[h] p=[p]
 An admin starts a new Reaper game. The reap cooldown is [h], and the first to reach [p] points is the winner. Both parameters are optional. The default value of [h] is 12, and the default value of [p] is 42,300,000 (12 hours to reap).
 
@@ -21,6 +25,7 @@ An admin changes the points necessary to win to [p].
 #### end game
 An admin forcibly ends the ongoing game.
 
+## Player Commands
 #### reap
 Any player can reap! If this is your first reap, you will automatically join the standings. Your cooldown will also begin.
 You may get bonus points, or free reaps!
