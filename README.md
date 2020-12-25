@@ -25,6 +25,7 @@ An admin changes the points necessary to win to [p].
 #### end game
 An admin forcibly ends the ongoing game.
 
+
 ## Player Commands
 #### reap
 Any player can reap! If this is your first reap, you will automatically join the standings. Your cooldown will also begin.
@@ -35,3 +36,6 @@ Find the current point value of a reap (in milliseconds).
 
 #### rank
 Find out your current point total, and your current rank in the game!
+
+#### leaderboard
+Return a top10 current leaderboard of the ongoing game.
