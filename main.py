@@ -59,8 +59,9 @@ async def on_message(message):
       #if we can't, its because the bot doesn't have enough permissions.
       try:
         await message.guild.create_text_channel(name='reaper',topic="This channel is for playing reaper. Type 'help' to learn how to play.")
+        await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.")
         await message.guild.create_role(name='reaper-admin',mentionable=True)
-        await message.channel.send("Reaper channel and reaper-admin role created!")
+        await message.channel.send("Reaper channels and reaper-admin role created!")
       except:
         response = "Unable to comply. The bot doesn't have the required permission 😭."
         await message.channel.send(response)
