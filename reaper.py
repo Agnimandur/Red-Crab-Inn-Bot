@@ -172,10 +172,10 @@ Contestant (these only work in the #reaper channel):
       delta = timedelta(seconds=remaining//1000)
       response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=str(delta))
     else:
-      score = (currentTime - db[game][0])//1000
       modifier = getmodifier()
       free = getfree()
-      newScore = score*modifier
+      score = (modifier*(currentTime - db[game][0]))//1000
+      newScore = score
       if yourInfo in db.keys():
         newScore += db[yourInfo][1]
       newTime = currentTime
@@ -188,7 +188,7 @@ Contestant (these only work in the #reaper channel):
         if free:
           bonus += "and a free reap!!"
         bonus += "!"
-      await message.channel.send("Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score*modifier)+bonus)
+      await message.channel.send("Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score)+bonus)
 
       db[game] = (currentTime,db[game][1],db[game][2],db[game][3])
       db[yourInfo] = (newTime,newScore)
