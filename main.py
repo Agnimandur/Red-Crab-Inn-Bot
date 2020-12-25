@@ -33,7 +33,7 @@ async def on_message(message):
   game = "REAPER GAME "+str(message.guild.id)
   if message.author.bot:
     return
-  if message.channel.name.startswith('reaper'):
+  if message.channel.name == 'reaper' or message.channel.name == 'reaper-discussion':
     #if this message is a reaper command, let reaper.py handle it.
     response,beginGame = await reaper(message)
 
@@ -80,9 +80,9 @@ async def on_message(message):
   elif message.content.lower() == 'help':
     response = """```
 Reaper Setup:
-  $reaper            Initialize the Reaper channel in a server.
+  $reaper            Initialize the Reaper channels and roles in a server.
 
-All Reaper related commands can only be done in the #reaper channel.
+All Reaper related commands can only be done in the #reaper or #reaper-discussion channel.
 
 Miscellaneous:
   $quote             Receive an inspirational quote.
