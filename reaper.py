@@ -97,6 +97,9 @@ async def reaper(message):
     if role.name == 'reaper-admin':
       admin = True
       break
+  #Reaper Test Server Only1
+  if message.guild.id==791479138447917076:
+    admin = True
   text = message.content.lower()
   if admin and text.startswith('begin game') and game not in db.keys():
     cooldown = H
@@ -186,7 +189,7 @@ Contestant (these only work in the #reaper channel):
       if modifier > 1:
         bonus = "You also got a {mod}x reap".format(mod=modifier)
         if free:
-          bonus += "and a free reap!!"
+          bonus += " and a free reap!!"
         bonus += "!"
       await message.channel.send("Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score)+bonus)
 
