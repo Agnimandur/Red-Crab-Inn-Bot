@@ -8,6 +8,9 @@ To add this bot to your discord server, use **[this link](https://discord.com/ap
 #### $quote
 Receive an inspirational quote!
 
+#### $trump
+Receive a Donald Trump quote!
+
 #### $github
 Get a link to this github repository.
 
