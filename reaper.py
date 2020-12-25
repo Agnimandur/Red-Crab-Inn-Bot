@@ -132,7 +132,7 @@ async def reaper(message):
       pi = len(text)+1
     if hi > 0:
       try:
-        cooldown = max(0.001,float(text[hi+2:pi-1]))
+        cooldown = max(0.002,float(text[hi+2:pi-1]))
       except:
         cooldown = H
     if pi < len(text):
@@ -183,7 +183,7 @@ Contestant (these only work in the #reaper channel):
   #update the database (tuples are immutable!)
   elif admin and text.startswith('h=') and channel=='reaper':
     try:
-      db[game] = (db[game][0],max(0.001,float(text[2:])),db[game][2],db[game][3])
+      db[game] = (db[game][0],max(0.002,float(text[2:])),db[game][2],db[game][3])
       response = "Reap cooldown updated to {h} hours.".format(h=db[game][1])
       beginMessage = await message.channel.fetch_message(db[game][3])
       if beginMessage != None:
