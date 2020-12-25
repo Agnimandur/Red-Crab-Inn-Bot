@@ -100,8 +100,9 @@ async def reaper(message):
   #senders info
   response=""
   yourID = str(message.author.id)
-  author = str(message.author.nick)
+  author = message.author.name if message.author.nick == None else message.author.nick
   server = str(message.guild.id)
+  channel = message.channel.name
   game = "REAPER GAME "+server
   yourInfo = server + " " + yourID
 
@@ -122,7 +123,7 @@ async def reaper(message):
   text = message.content.lower()
 
   #begin the game (check parameters)
-  if admin and text.startswith('begin game') and game not in db.keys():
+  if admin and text.startswith('begin game') and game not in db.keys() and channel=='reaper':
     cooldown = H
     towin = P
     hi = text.find('h=')
@@ -176,11 +177,11 @@ Contestant (these only work in the #reaper channel):
 
   #These commands only work in ongoing games
   #end the game
-  if admin and text == 'end game':
+  if admin and text == 'end game' and channel=='reaper':
     await endgame(message)
   #change the number of hours between reaps or the points needed to win (try/except statements to check valid inputs)
   #update the database (tuples are immutable!)
-  elif admin and text.startswith('h='):
+  elif admin and text.startswith('h=') and channel=='reaper':
     try:
       db[game] = (db[game][0],max(0.001,float(text[2:])),db[game][2],db[game][3])
       response = "Reap cooldown updated to {h} hours.".format(h=db[game][1])
@@ -189,7 +190,7 @@ Contestant (these only work in the #reaper channel):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif admin and text.startswith('p='):
+  elif admin and text.startswith('p=') and channel=='reaper':
     try:
       db[game] = (db[game][0],db[game][1],max(10,int(text[2:])),db[game][3])
       response = "Points to win updated to {p} points.".format(p=db[game][2])
@@ -199,7 +200,7 @@ Contestant (these only work in the #reaper channel):
     except:
       pass
   #reap!
-  elif text.startswith('reap'):
+  elif text.startswith('reap') and len(text) <= 6 and channel=='reaper':
     #can't reap
     if yourInfo in db.keys() and currentTime-db[yourInfo][0] < db[game][1]*3600000:
       remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
@@ -261,7 +262,7 @@ Contestant (these only work in the #reaper channel):
       rank = rankList.index(int(yourID))+1
       response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
   #find the scores of other people
-  elif text.startswith('rank='):
+  elif text.startswith('rank=') and len(text)>9:
     search = message.content[5:]
     #all members whose names start with "search"
     members = await message.guild.query_members(search,limit=5)

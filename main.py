@@ -33,7 +33,7 @@ async def on_message(message):
   game = "REAPER GAME "+str(message.guild.id)
   if message.author.bot:
     return
-  if message.channel.name=='reaper':
+  if message.channel.name.startswith('reaper'):
     #if this message is a reaper command, let reaper.py handle it.
     response,beginGame = await reaper(message)
 
@@ -85,6 +85,8 @@ All Reaper related commands can only be done in the #reaper channel.
 
 Miscellaneous:
   $quote             Receive an inspirational quote.
+
+  $trump             Receive a Donald Trump quote.
   
   $github            Get a link to the bot's github page.
     ```"""
