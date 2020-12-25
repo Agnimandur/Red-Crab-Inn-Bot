@@ -212,7 +212,7 @@ Contestant (these only work in the #reaper channel):
       member = await message.guild.fetch_member(person[1])
       if member==None:
         continue
-      add = "{pos}. {name} with {points} pts\n".format(pos=i+1,member.name,points=person[0])
+      add = "{pos}. {name} with {points} pts\n".format(pos=i+1,name=member.name,points=person[0])
       response += add
       i += 1
   elif text=='rank':
