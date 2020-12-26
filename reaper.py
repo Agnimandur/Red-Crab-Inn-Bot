@@ -156,6 +156,8 @@ Admin:
   p=[p]             Change the points needed to win to [p].
 
   end game          End the game manually.
+
+  reset [users]     Manually resets the scores to 0 of all @ed [users].
     
 Contestant (these only work in the #reaper channel):
   reap              Reap to gain points! The points are equal to the time
@@ -198,6 +200,12 @@ Contestant (these only work in the #reaper channel):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
+  elif admin and 'reset' in text:
+    for member in message.mentions:
+      hisInfo = server + " " + str(member.id)
+      if hisInfo in db.keys():
+        db[hisInfo] = (0,0)
+    response = "Reset successfully completed!"
   #reap!
   elif text.startswith('reap') and len(text) <= 6 and channel=='reaper':
     #can't reap
