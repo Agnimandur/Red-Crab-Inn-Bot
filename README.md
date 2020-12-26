@@ -11,6 +11,9 @@ Receive an inspirational quote!
 #### $trump
 Receive a Donald Trump quote!
 
+#### $8ball
+The Magic 8 Ball will answer your query.
+
 #### $github
 Get a link to this github repository.
 

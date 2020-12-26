@@ -22,6 +22,14 @@ def get_trump():
   quote = '"'+json_data['value']+'" \n *Date: {date}*'.format(date=json_data['appeared_at'][:10])
   return quote
 
+#8ball function
+ballFile = open('8ball.txt','r')
+ballList = ballFile.readlines()
+ballFile.close()
+def ball():
+  r = random.randint(0,19)
+  return ballList[r].strip('\n')
+
 #the bot is online now!
 @client.event
 async def on_ready():
@@ -73,6 +81,10 @@ async def on_message(message):
   elif message.content == '$trump':
     quote = get_trump()
     await message.channel.send(quote)
+  #the 8ball will answer your query
+  elif message.content == '$8ball':
+    response = ball()
+    await message.channel.send(message.author.mention + " " + response)
   #send a link to the github
   elif message.content == '$github':
     await message.channel.send("https://github.com/Agnimandur/Red-Crab-Inn-Bot")
@@ -88,6 +100,8 @@ Miscellaneous:
   $quote             Receive an inspirational quote.
 
   $trump             Receive a Donald Trump quote.
+
+  $8ball             The Magic 8Ball will answer your question.
   
   $github            Get a link to the bot's github page.
     ```"""
