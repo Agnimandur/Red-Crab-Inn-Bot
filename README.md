@@ -17,6 +17,9 @@ The Magic 8 Ball will answer your query.
 #### $github
 Get a link to this github repository.
 
+#### $servers
+Find the number of servers and people that this bot has reached.
+
 #### $reaper
 An admin can type $reaper to create a reaper channel in your discord server.
 The following commands only work in the #reaper channel.
