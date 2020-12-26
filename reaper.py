@@ -78,9 +78,8 @@ async def endgame(message):
   f = open(result,"w+")
   f.write(message.guild.name + " Final Standings: \n")
   for person in rankList:
-    member = await message.guild.fetch_member(person[1])
+    member = message.guild.get_member(person[1])
     if member != None:
-
       f.write(member.name + "#" + member.discriminator + " with " + str(person[0]) + " points\n")
   f.close()
 
@@ -247,7 +246,7 @@ Contestant (these only work in the #reaper channel):
       if i==min(len(rankList),10):
         break
       #skip people who aren't in the server anymore
-      member = await message.guild.fetch_member(person[1])
+      member = message.guild.get_member(person[1])
       if member==None:
         continue
       add = "{pos}. {name} with {points} pts\n".format(pos=i+1,name=member.nick if member.nick != None else member.name,points=person[0])

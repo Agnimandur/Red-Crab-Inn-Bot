@@ -6,7 +6,11 @@ import random
 from replit import db
 from keep_alive import keep_alive
 from reaper import reaper
-client = discord.Client()
+
+#set up the bot
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents)
 
 #get a random quote from an api
 def get_quote():
