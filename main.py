@@ -88,6 +88,10 @@ async def on_message(message):
   #send a link to the github
   elif message.content == '$github':
     await message.channel.send("https://github.com/Agnimandur/Red-Crab-Inn-Bot")
+  #number of servers the bot is in
+  elif message.content == '$servers':
+    totalPeople = sum([g.member_count for g in client.guilds])
+    await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=totalPeople))
   #send the help box in markdown
   elif message.content.lower() == 'help':
     response = """```
@@ -104,6 +108,8 @@ Miscellaneous:
   $8ball             The Magic 8Ball will answer your question.
   
   $github            Get a link to the bot's github page.
+
+  $servers           Get the number of servers the bot is in.  
     ```"""
     await message.channel.send(response)
 
