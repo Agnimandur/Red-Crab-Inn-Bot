@@ -36,6 +36,9 @@ An admin changes the points necessary to win to [p].
 #### end game
 An admin forcibly ends the ongoing game.
 
+#### reset [users]
+An admin can type "reset" along with @ing a list of [users] to manually resett their scores to 0.
+
 #### reap
 Any player can reap! If this is your first reap, you will automatically join the standings. Your cooldown will also begin. You may get bonus points, or free reaps!
 
