@@ -159,7 +159,7 @@ Admin:
 
   reset [users]     Manually resets the scores to 0 of all @ed [users].
     
-Contestant (these only work in the #reaper channel):
+Contestant (these only work in the #reaper or #reaper-discussion channel):
   reap              Reap to gain points! The points are equal to the time
                     difference between your reap and the most recent reap.
                     There is a cooldown, so reap wisely to maximize points!
