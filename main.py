@@ -97,8 +97,8 @@ async def on_message(message):
     await message.channel.send("https://github.com/Agnimandur/Red-Crab-Inn-Bot")
   #number of servers the bot is in
   elif message.content == '$servers':
-    totalPeople = sum([g.member_count for g in client.guilds])
-    await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=totalPeople))
+    totalPeople = sum([(1 if not x.bot else 0) for x in client.users])
+    await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=str(totalPeople)))
   #send the help box in markdown
   elif message.content.lower() == 'help':
     response = """```
