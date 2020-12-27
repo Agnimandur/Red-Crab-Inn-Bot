@@ -24,7 +24,7 @@ Find the number of servers and people that this bot has reached.
 
 #### $reaper
 An admin can type $reaper to create a reaper channel in your discord server.
-The following commands only work in the #reaper channel.
+The following commands only work in the #reaper or #reaper-discussion channel.
 
 <br/>
 
