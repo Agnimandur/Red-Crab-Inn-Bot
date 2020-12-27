@@ -68,7 +68,7 @@ async def on_message(message):
       botMessage = await message.channel.send(response)
       #begin the game
       if beginGame==True:
-        db[game] = (db[game][0],db[game][1],db[game][2],botMessage.id)
+        db[game] = (db[game][0],db[game][1],db[game][2],db[game][3],botMessage.id)
         await botMessage.pin()
     return
   #initialize the reaper channel

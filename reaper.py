@@ -9,7 +9,7 @@ import random
 #default parameters
 H = 12 #12 hours between reaps
 P = 43200 #first to reap 12 hours
-BH = 0.003 #10.8 seconds between reaps
+BS = 10 #10 seconds between reaps
 BP = 120 #first to reap 2 minutes
 
 #send the reaper logo
@@ -29,7 +29,9 @@ def leaderboard(guild):
   return temp
 
 #determine the modifier to the score (odds provided by kevinmathz)
-def getmodifier():
+def getmodifier(game):
+  if db[game][3]==0:
+    return 1
   d1000 = random.randint(1,1000)
   if d1000 <= 100:
     return 2
@@ -45,21 +47,27 @@ def getmodifier():
     return 1
 
 #is this a free reap?
-def getfree():
+def getfree(game):
+  if db[game][3]==0:
+    return False
   return (random.randint(1,50)==1)
 
 #the begin game message (can be edited later on)
 def openingcrawl(game):
   mode = "blitz" if "BLITZ "+game in db.keys() else "standard"
+  unit = "seconds" if mode=='blitz' else "hours"
+  between = int(3600*db[game][1]) if mode=='blitz' else db[game][1]
+  status = "ENABLED" if db[game][3]==1 else "DISABLED"
   return """**The game has begun!**
     - To play, simply type in reap to make your first reap!
     - For the rules and objectives, check out 
     <https://artofproblemsolving.com/reaper>.
-    - The time between reaps is {between} hours.
-    - Reap {delta} ({win} points) to win!.
+    - The time between reaps is {between} {unit}.
+    - Reap {delta} ({win} points) to win!
     - This is a {mode} game.
+    - Reap modifiers are {status}.
     - Talk to the mods for additional information.
-    """.format(between=db[game][1],delta=str(timedelta(seconds=db[game][2])),win=db[game][2],mode=mode)
+    """.format(between=between,unit=unit,delta=str(timedelta(seconds=db[game][2])),win=db[game][2],mode=mode,status=status)
 
 #End the game
 async def endgame(message):
@@ -88,7 +96,7 @@ async def endgame(message):
       f.write(member.name + "#" + member.discriminator + " with " + str(person[0]) + " points\n")
   f.close()
 
-  response = """**The game is over!**
+  response = """**The game has ended!**
   - The winner is <@{champion}>!!
   - Final standings are available in the attached file.
   - Talk to the mods for more details.
@@ -103,7 +111,8 @@ async def endgame(message):
     files.append(image)
 
   #send the message and files
-  await message.channel.send(content=response,files=files)
+  m = await message.channel.send(content=response,files=files)
+  await m.pin()
 
 #The amount of time before you can reap again
 def canreap(currentTime,message):
@@ -148,32 +157,53 @@ async def reaper(message):
   text = message.content.lower()
 
   #begin the game (check parameters)
-  if admin and text.startswith('begin game') and game not in db.keys() and channel=='reaper':
-    blitz = True if text.find('blitz') == 11 else False
+  if admin and (text.startswith('begin game') or text.startswith('begin blitz game')) and game not in db.keys() and channel=='reaper':
+    blitz = True if text.find('blitz') >= 0 else False
     cooldown = H
     towin = P
+    random = 1
     if blitz:
-      cooldown = BH
+      cooldown = BS
       towin = BP
     hi = text.find('h=')
+    si = text.find('s=')
     pi = text.find('p=')
-    if pi==-1:
-      pi = len(text)+1
-    if hi > 0:
-      try:
-        cooldown = max(0.002,float(text[hi+2:pi-1]))
-        if blitz:
-          cooldown = min(cooldown,0.05)
-      except:
+    rngi = text.find('rng=')
+
+    try:
+      hours = float(text[hi+2:text.find(' ',hi)])
+      if not blitz:
+        cooldown = min(max(hours,0.003),1000)
+    except:
+      pass
+
+    try:
+      seconds = int(text[si+2:text.find(' ',si)])
+      if blitz:
+        cooldown = min(max(seconds,5),100)
+    except:
+      pass
+    
+    try:
+      points = int(text[pi+2:text.find(' ',pi)])
+      towin = max(points,10)
+      if blitz:
+        towin = min(points,1000)
+    except:
+      pass
+    
+    try:
+      random = int(text[rngi+4:text.find(' ',rngi)])
+      if 0 <= random <= 1:
         pass
-    if pi < len(text):
-      try:
-        towin = max(10,int(text[pi+2:]))
-        if blitz:
-          towin = min(towin,1000)
-      except:
-        pass
-    db[game] = (currentTime,cooldown,towin,0)
+      else:
+        error=1//0
+    except:
+      pass
+
+    if blitz:
+      cooldown = cooldown/3600
+    db[game] = (currentTime,cooldown,towin,random,0)
     if blitz:
       db["BLITZ "+game] = [currentTime]
 
@@ -184,17 +214,19 @@ async def reaper(message):
     response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
 Admin (those with the @reaper-admin role):
 
-  begin game h=[h] p=[p]
-  Begin the game! The reap cooldown is [h], and the points to win is [p]. These games will likely take days if not weeks to finish.
+  begin game h=[h] p=[p] rng=[rng]
+  Begin the game! The reap cooldown is [h] hours, and the points to win is [p]. If [rng]=0, reap multipliers and free reaps are disabled. These games will likely take days if not weeks to finish.
   
-  begin game blitz h=[h] p=[p]
-  Begin a blitz reaper game! As above, except in blitz all participants compete simultaneously from beginning to end. Usually, a blitz game takes between 2 minutes and 2 hours to finish.
+  begin blitz game s=[s] p=[p] rng=[rng]
+  Begin a blitz reaper game! The reap cooldown is [s] seconds. In blitz all participants compete simultaneously from beginning to end. Usually, a blitz game takes between 2 minutes and 2 hours to finish. A fancy results graph is also displayed.
 
                     
-  h=[h]             Change the reap cooldown to [h].
+  h=[h]             Change the reap cooldown to [h] hours.
+  s=[s]             Change the reap cooldown to [s] seconds.
   p=[p]             Change the points needed to win to [p].
+  rng=[rng]         Turn randomness on or off.
   end game          End the game manually.
-  reset [users]     Manually resets the scores to 0 of all @ed [users].
+  reset [users]     Resets the score of all @ed [users].
     
 Contestant (these only work in the #reaper or #reaper-discussion channel):
   reap              Reap to gain points! The points are equal to the time
@@ -202,7 +234,7 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
                     There is a cooldown, so reap wisely to maximize points!
                     Avoid getting "sniped" and wasting precious reaps.
   timer             The current value of a reap.
-  nextreap          The amount of time before you can next reap.
+  nextreap          The time before you can next reap.
   rank=[name]       Your current rank in the ongoing game. If [name] is given,
                     it finds the scores of aLL players with that [name].
   leaderboard       The current top 10 leaderboard.
@@ -217,14 +249,22 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
     await endgame(message)
   #change the number of hours between reaps or the points needed to win (try/except statements to check valid inputs)
   #update the database (tuples are immutable!)
-  elif admin and text.startswith('h=') and channel=='reaper':
+  elif admin and text.startswith('h=') and channel=='reaper' and not blitz:
     try:
-      cooldown = max(0.002,float(text[2:]))
-      if blitz:
-        cooldown = min(cooldown,0.05)
-      db[game] = (db[game][0],cooldown,db[game][2],db[game][3])
-      response = "Reap cooldown updated to {h} hours.".format(h=db[game][1])
-      beginMessage = await message.channel.fetch_message(db[game][3])
+      cooldown = min(max(float(text[2:]),0.003),1000)
+      db[game] = (db[game][0],cooldown,db[game][2],db[game][3],db[game][4])
+      response = "Reap cooldown updated to {h} hours.".format(h=cooldown)
+      beginMessage = await message.channel.fetch_message(db[game][4])
+      if beginMessage != None:
+        await beginMessage.edit(content=openingcrawl(game))
+    except:
+      pass
+  elif admin and text.startswith('s=') and channel=='reaper' and blitz:
+    try:
+      cooldown = min(max(int(text[2:]),5),100)
+      db[game] = (db[game][0],cooldown/3600,db[game][2],db[game][3],db[game][4])
+      response = "Reap cooldown updated to {s} seconds.".format(s=cooldown)
+      beginMessage = await message.channel.fetch_message(db[game][4])
       if beginMessage != None:
         await beginMessage.edit(content=openingcrawl(game))
     except:
@@ -234,9 +274,23 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       towin = max(10,int(text[2:]))
       if blitz:
         towin = min(towin,1000)
-      db[game] = (db[game][0],db[game][1],towin,db[game][3])
-      response = "Points to win updated to {p} points.".format(p=db[game][2])
-      beginMessage = await message.channel.fetch_message(db[game][3])
+      db[game] = (db[game][0],db[game][1],towin,db[game][3],db[game][4])
+      response = "Points to win updated to {p} points.".format(p=towin)
+      beginMessage = await message.channel.fetch_message(db[game][4])
+      if beginMessage != None: 
+        await beginMessage.edit(content=openingcrawl(game))
+    except:
+      pass
+  elif admin and text.startswith('rng=') and channel=='reaper':
+    try:
+      random = int(text[4:])
+      if 0 <= random <= 1:
+        pass
+      else:
+        error=1//0
+      db[game] = (db[game][0],db[game][1],db[game][2],random,db[game][4])
+      response = "Randomness has been {status}.".format(status="ENABLED" if random==1 else "DISABLED")
+      beginMessage = await message.channel.fetch_message(db[game][4])
       if beginMessage != None: 
         await beginMessage.edit(content=openingcrawl(game))
     except:
@@ -261,15 +315,13 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=nextReap)
     else:
       #get scoring info
-      modifier = getmodifier()
-      free = getfree()
+      modifier = getmodifier(game)
+      free = getfree(game)
       score = (modifier*(currentTime - db[game][0]))//1000
       newScore = score
       if yourInfo in db.keys():
         newScore += db[yourInfo][1]
-      newTime = currentTime
-      if free:
-        newTime = 0
+      newTime = 0 if free else currentTime
       
       #send results
       bonus = ""
@@ -282,11 +334,11 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
 
       #update database with your time and score
       try:
-        db[game] = (currentTime,db[game][1],db[game][2],db[game][3])
+        db[game] = (currentTime,db[game][1],db[game][2],db[game][3],db[game][4])
         db[yourInfo] = (newTime,newScore)
         if blitz:
           events = db["BLITZ "+game]
-          events.append([newTime,newScore,int(yourID)])
+          events.append([currentTime,newScore,int(yourID)])
           db["BLITZ "+game] = events
         response = ""
         #check for a winner

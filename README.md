@@ -30,23 +30,28 @@ The following commands only work in the #reaper channel.
 
 ## Reaper Game Commands
 
-#### begin game h=[h] p=[p]
-An admin starts a new Reaper game. The reap cooldown is [h], and the first to reach [p] points is the winner. Both parameters are optional. The default value of [h] is 12, and the default value of [p] is 43200 (12 hours to reap).
+#### begin game h=[h] p=[p] rng=[rng]
+An admin starts a new Reaper game. The reap cooldown is [h] hours, and the first to reach [p] points wins. If [rng] is 0, then there will be no random reap multipliers or free reaps! All parameters are optional. The default value of [h] is 12, the default value of [p] is 43200 (12 hours to reap), and the default value of [rng] is 1.
 
-#### begin game blitz h=[h] p=[p]
-An admin starts a new **Blitz** Reaper game. The difference between a blitz and a standard game is that in blitz, the reap cooldowns and point target is much lower. Also, the player count is usually in the range 2-6. Players play the game continuously from beginning to end.
+#### begin blitz game s=[s] p=[p]
+An admin starts a new **Blitz** Reaper game. The reap cooldown is [s] seconds, and the first to reach [p] points wins. The difference between blitz and standard games is that in blitz, players play continuously from the beginning to the end of the game. Blitz games usually last from 2 minutes to 2 hours.
 
-#### h=[h]
-An admin changes the reap cooldown to [h].
+#### h=[h] or s=[s]
+An admin changes the reap cooldown to [h] hours (standard games only) or [s] seconds (blitz games only).
 
 #### p=[p]
-An admin changes the points necessary to win to [p].
+An admin changes the point target to [p]. If a player is already at [p] points, he still needs to reap once to win!
+
+#### rng=[rng]
+If [rng]=0, then randomness is turned off. If [rng]=1, then randomness is turned on.
 
 #### end game
 An admin forcibly ends the ongoing game.
 
 #### reset [users]
-An admin can type "reset" along with @ing a list of [users] to manually resett their scores to 0.
+An admin can type "reset" along with @ing a list of [users] to manually reset all their scores to 0.
+
+<br />
 
 #### reap
 Any player can reap! If this is your first reap, you will automatically join the standings. Your cooldown will also begin. You may get bonus points, or free reaps!
