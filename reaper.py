@@ -125,6 +125,13 @@ def canreap(currentTime,message):
     remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
     delta = timedelta(seconds=remaining//1000)
     return str(delta)
+
+def find(text,i):
+  f = text.find(' ',i)
+  if f==-1:
+    return None
+  else:
+    return f
   
 #keys are server id + " " + user id
 #values are (time,score) tuples
@@ -171,21 +178,21 @@ async def reaper(message):
     rngi = text.find('rng=')
 
     try:
-      hours = float(text[hi+2:text.find(' ',hi)])
+      hours = float(text[hi+2:find(text,hi)])
       if not blitz:
         cooldown = min(max(hours,0.003),1000)
     except:
       pass
 
     try:
-      seconds = int(text[si+2:text.find(' ',si)])
+      seconds = int(text[si+2:find(text,si)])
       if blitz:
         cooldown = min(max(seconds,5),100)
     except:
       pass
     
     try:
-      points = int(text[pi+2:text.find(' ',pi)])
+      points = int(text[pi+2:find(text,pi)])
       towin = max(points,10)
       if blitz:
         towin = min(points,1000)
@@ -193,7 +200,7 @@ async def reaper(message):
       pass
     
     try:
-      random = int(text[rngi+4:text.find(' ',rngi)])
+      random = int(text[rngi+4:find(text,rngi)])
       if 0 <= random <= 1:
         pass
       else:
