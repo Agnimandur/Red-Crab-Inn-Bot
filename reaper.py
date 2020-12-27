@@ -147,7 +147,7 @@ async def reaper(message):
   #build the help box in markdown
   elif text == 'help':
     response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
-Admin:
+Admin (those with the @reaper-admin role):
   begin game h=[h] p=[p]      Begin the game! Reap cooldown is [h], 
                     and points to win is [p].
                     

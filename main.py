@@ -67,13 +67,16 @@ async def on_message(message):
         break
     if reaperID != 0:
       await message.channel.send("Reaper channel already exists. Go to <#{reaperID}>.".format(reaperID=reaperID))
+    elif not message.author.guild_permissions.administrator:
+      await message.channel.send("Only an admin can do this!")
     else:
       #if we can't, its because the bot doesn't have enough permissions.
       try:
         await message.guild.create_text_channel(name='reaper',topic="This channel is for playing reaper. Type 'help' to learn how to play.",slowmode=5)
         await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.")
-        await message.guild.create_role(name='reaper-admin',mentionable=True)
-        await message.channel.send("Reaper channels and reaper-admin role created!")
+        reaperadmin = await message.guild.create_role(name='reaper-admin',mentionable=True)
+        await message.author.add_roles(reaperadmin)
+        await message.channel.send("Reaper channels and reaper-admin role created! You are automatically a {ra}!".format(ra=reaperadmin.mention))
       except:
         response = "Unable to comply. The bot doesn't have the required permission 😭."
         await message.channel.send(response)
