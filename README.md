@@ -10,6 +10,9 @@ Receive an inspirational quote!
 #### $trump
 Receive a Donald Trump quote!
 
+#### $kanye
+Receive a Kanye West quote!
+
 #### $8ball
 The Magic 8 Ball will answer your query.
 

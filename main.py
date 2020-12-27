@@ -26,6 +26,16 @@ def get_trump():
   quote = '"'+json_data['value']+'" \n *Date: {date}*'.format(date=json_data['appeared_at'][:10])
   return quote
 
+#get a random Kanye West quote from an api
+def get_kanye():
+  response = requests.get("https://api.kanye.rest/")
+  json_data = json.loads(response.text)
+  quote = json_data['quote']
+  if quote[-1] != '.':
+    quote += '.'
+  quote = '"'+quote+'"'
+  return quote
+
 #8ball function
 ballFile = open('8ball.txt','r')
 ballList = ballFile.readlines()
@@ -88,6 +98,10 @@ async def on_message(message):
   elif message.content == '$trump':
     quote = get_trump()
     await message.channel.send(quote)
+  #get a kanye quote
+  elif message.content == '$kanye':
+    quote = get_kanye()
+    await message.channel.send(quote)
   #the 8ball will answer your query
   elif message.content == '$8ball':
     response = ball()
@@ -108,9 +122,11 @@ Reaper Setup:
 All Reaper related commands can only be done in the #reaper or #reaper-discussion channel.
 
 Miscellaneous:
-  $quote             Receive an inspirational quote.
+  $quote             Get an inspirational quote.
 
-  $trump             Receive a Donald Trump quote.
+  $trump             Get a Donald Trump quote.
+
+  $kanye             Get a Kanye West quote. 
 
   $8ball             The Magic 8Ball will answer your question.
   
