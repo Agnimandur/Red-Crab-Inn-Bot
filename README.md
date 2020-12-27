@@ -33,6 +33,9 @@ The following commands only work in the #reaper channel.
 #### begin game h=[h] p=[p]
 An admin starts a new Reaper game. The reap cooldown is [h], and the first to reach [p] points is the winner. Both parameters are optional. The default value of [h] is 12, and the default value of [p] is 43200 (12 hours to reap).
 
+#### begin game blitz h=[h] p=[p]
+An admin starts a new **Blitz** Reaper game. The difference between a blitz and a standard game is that in blitz, the reap cooldowns and point target is much lower. Also, the player count is usually in the range 2-6. Players play the game continuously from beginning to end.
+
 #### h=[h]
 An admin changes the reap cooldown to [h].
 
