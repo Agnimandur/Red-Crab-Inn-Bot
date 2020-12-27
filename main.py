@@ -22,8 +22,12 @@ def get_quote():
 #get a random Donald Trump quote from an api
 def get_trump():
   response = requests.get("https://tronalddump.io/random/quote")
+  response2 = requests.get("https://api.whatdoestrumpthink.com/api/v1/quotes/random")
   json_data = json.loads(response.text)
+  json_data2 = json.loads(response2.text)
   quote = '"'+json_data['value']+'" \n *Date: {date}*'.format(date=json_data['appeared_at'][:10])
+  if random.randint(1,2)==1:
+    quote = '"'+json_data2['message']+'"'
   return quote
 
 #get a random Kanye West quote from an api
