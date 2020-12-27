@@ -50,5 +50,8 @@ The number of points you get is the number of seconds between the time of your r
 #### timer
 Find the current point value of a reap (in milliseconds).
 
+#### nextreap
+Find the time remaining before you can reap again.
+
 #### rank=[name]
 Find out your current point total, and your current rank in the game! If the optional [name] parameter is provided, it finds the score of person [name].

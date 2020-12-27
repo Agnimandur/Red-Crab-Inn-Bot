@@ -91,6 +91,18 @@ async def endgame(message):
 
   #send the message and file
   await message.channel.send(content=response,file=discord.File(result,filename=filename))
+
+#The amount of time before you can reap again
+def canreap(currentTime,message):
+  yourID = str(message.author.id)
+  yourInfo = str(message.guild.id) + " " + yourID
+  game = "REAPER GAME " + str(message.guild.id)
+  if yourInfo not in db.keys() or currentTime-db[yourInfo][0] >= db[game][1]*3600000:
+    return ""
+  else:
+    remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
+    delta = timedelta(seconds=remaining//1000)
+    return str(delta)
   
 #keys are server id + " " + user id
 #values are (time,score) tuples
@@ -167,6 +179,8 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
 
   timer             The current value of a reap.
 
+  nextreap          The amount of time before you can next reap.
+
   rank=[name]       Your current rank in the ongoing game. If [name] is given,
                     it finds the scores of aLL players with that [name].
 
@@ -206,13 +220,18 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       if hisInfo in db.keys():
         db[hisInfo] = (0,0)
     response = "Reset successfully completed!"
+  elif text=='nextreap':
+    nextReap = canreap(currentTime,message)
+    if len(nextReap) == 0:
+      response = "Hi <@{author}>, your reap is not on cooldown!".format(author=yourID)
+    else:
+      response = "Hi <@{author}>, you need to wait {delta} before you can next reap.".format(author=yourID,delta=nextReap)
   #reap!
   elif text.startswith('reap') and len(text) <= 6 and channel=='reaper':
     #can't reap
-    if yourInfo in db.keys() and currentTime-db[yourInfo][0] < db[game][1]*3600000:
-      remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
-      delta = timedelta(seconds=remaining//1000)
-      response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=str(delta))
+    nextReap = canreap(currentTime,message)
+    if len(nextReap) > 0:
+      response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=nextReap)
     else:
       #get scoring info
       modifier = getmodifier()
