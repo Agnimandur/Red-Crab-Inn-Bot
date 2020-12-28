@@ -95,6 +95,28 @@ async def on_message(message):
       except:
         response = "Unable to comply. The bot doesn't have the required permission 😭."
         await message.channel.send(response)
+  #remove the bot from your server
+  if message.content == '$leave':
+    if not message.author.guild_permissions.administrator:
+      await message.channel.send("Only an admin can do this!")
+      return
+    g = message.guild
+    await message.channel.send("What wonderful times we've shared together! Goodbye, and may the Seven smile upon you.")
+    for channel in g.channels:
+      if channel.name.lower().find('reaper') >= 0:
+        await channel.delete()
+    for category in g.categories:
+      if category.name.lower().find('reaper') >= 0:
+        await category.delete()
+    for role in g.roles:
+      if role.name.lower().find('reaper') >= 0:
+        await role.delete()
+    #purge the database
+    gid = str(g.id)
+    for key in db.keys():
+      if key.find(gid) >= 0:
+        del db[key]
+    await g.leave()
   #get a quote
   if message.content == '$quote':
     quote = get_quote()
@@ -120,9 +142,10 @@ async def on_message(message):
     await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=str(totalPeople)))
   #send the help box in markdown
   elif message.content.lower() == 'help':
-    response = """```
-Reaper Setup:
+    response = """To invite the bot to YOUR server, type in $github to easily access the invite link.```
+Reaper Setup (server admins only):
   $reaper            Initialize the Reaper channels and roles in a server.
+  $leave             Purge the reaper bot from your server.
 
 All Reaper related commands can only be done in the #reaper or #reaper-discussion channel.
 
