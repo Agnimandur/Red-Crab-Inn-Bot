@@ -190,7 +190,7 @@ async def reaper(message):
     try:
       seconds = int(text[si+2:find(text,si)])
       if blitz:
-        cooldown = min(max(seconds,5),100)
+        cooldown = min(max(seconds,5),500)
     except:
       pass
     
@@ -198,7 +198,7 @@ async def reaper(message):
       points = int(text[pi+2:find(text,pi)])
       towin = max(points,10)
       if blitz:
-        towin = min(points,1000)
+        towin = min(points,5000)
     except:
       pass
     
