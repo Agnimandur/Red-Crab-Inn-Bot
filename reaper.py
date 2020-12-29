@@ -107,7 +107,10 @@ async def endgame(message):
   if blitz:
     events = db["BLITZ "+game]
     del db["BLITZ "+game]
-    image = graph(events,message.guild)
+    top = []
+    for i in range(0,min(5,len(rankList))):
+      top.append(rankList[i][1])
+    image = graph(events,message.guild,top)
     files.append(image)
 
   #send the message and files
@@ -116,6 +119,7 @@ async def endgame(message):
     await m.pin()
   except:
     print(m.guild.name + " doesn't have pin privileges")
+  await message.channel.edit(slowmode_delay=15)
 
 #The amount of time before you can reap again
 def canreap(currentTime,message):
@@ -216,7 +220,8 @@ async def reaper(message):
     db[game] = (currentTime,cooldown,towin,random,0)
     if blitz:
       db["BLITZ "+game] = [currentTime]
-
+    slowdown = min(21600,int(3600*cooldown))
+    await message.channel.edit(slowmode_delay=slowdown)
     await sendLogo(message.channel)
     return openingcrawl(game),True
   #build the help box in markdown
@@ -266,16 +271,20 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       response = "Reap cooldown updated to {h} hours.".format(h=cooldown)
       beginMessage = await message.channel.fetch_message(db[game][4])
       if beginMessage != None:
+        slowdown = min(21600,int(3600*cooldown))
+        await message.channel.edit(slowmode_delay=slowdown)
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
   elif admin and text.startswith('s=') and channel=='reaper' and blitz:
     try:
-      cooldown = min(max(int(text[2:]),5),100)
+      cooldown = min(max(int(text[2:]),5),500)
       db[game] = (db[game][0],cooldown/3600,db[game][2],db[game][3],db[game][4])
       response = "Reap cooldown updated to {s} seconds.".format(s=cooldown)
       beginMessage = await message.channel.fetch_message(db[game][4])
       if beginMessage != None:
+        slowdown = min(21600,cooldown)
+        await message.channel.edit(slowmode_delay=slowdown)
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
@@ -283,7 +292,7 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
     try:
       towin = max(10,int(text[2:]))
       if blitz:
-        towin = min(towin,1000)
+        towin = min(towin,5000)
       db[game] = (db[game][0],db[game][1],towin,db[game][3],db[game][4])
       response = "Points to win updated to {p} points.".format(p=towin)
       beginMessage = await message.channel.fetch_message(db[game][4])
