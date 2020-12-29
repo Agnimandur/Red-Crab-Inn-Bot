@@ -69,7 +69,10 @@ async def on_message(message):
       #begin the game
       if beginGame==True:
         db[game] = (db[game][0],db[game][1],db[game][2],db[game][3],botMessage.id)
-        await botMessage.pin()
+        try:
+          await botMessage.pin()
+        except:
+          print(message.guild.name + " doesn't have pin privileges")
     return
   #initialize the reaper channel
   if message.content == '$reaper':

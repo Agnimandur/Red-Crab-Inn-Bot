@@ -112,7 +112,10 @@ async def endgame(message):
 
   #send the message and files
   m = await message.channel.send(content=response,files=files)
-  await m.pin()
+  try:
+    await m.pin()
+  except:
+    print(m.guild.name + " doesn't have pin privileges")
 
 #The amount of time before you can reap again
 def canreap(currentTime,message):
