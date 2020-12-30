@@ -119,7 +119,6 @@ async def endgame(message):
     await m.pin()
   except:
     print(m.guild.name + " doesn't have pin privileges")
-  await message.channel.edit(slowmode_delay=15)
 
 #The amount of time before you can reap again
 def canreap(currentTime,message):
@@ -222,10 +221,24 @@ async def reaper(message):
     db[game] = (currentTime,cooldown,towin,random,0)
     if blitz:
       db["BLITZ "+game] = [currentTime]
-    slowdown = min(21600,int(3600*cooldown))
-    await message.channel.edit(slowmode_delay=slowdown)
     await sendLogo(message.channel)
     return openingcrawl(game),True
+  #promote to reaper-admin
+  elif admin and text.startswith('adminify'):
+    try:
+      reaperadmin = None
+      for role in message.guild.roles:
+        if role.name == 'reaper-admin':
+          reaperadmin = role
+          break
+      for member in message.mentions:
+        await member.add_roles(reaperadmin)
+      if len(message.mentions)==0:
+        response = "@ someone to give the reaper-admin role to!"
+      else:
+        response = "User{plural} sucessfully promoted to reaper-admin!".format(plural='' if len(message.mentions)==1 else 's')
+    except:
+      response = "There was a failure in promotion 🙁."
   #build the help box in markdown
   elif text == 'help':
     response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
@@ -244,6 +257,7 @@ Admin (those with the @reaper-admin role):
   rng=[rng]         Turn randomness on or off.
   end game          End the game manually.
   reset [users]     Resets the score of all @ed [users].
+  adminify [users]  Makes [users] reaper-admins.
     
 Contestant (these only work in the #reaper or #reaper-discussion channel):
   reap              Reap to gain points! The points are equal to the time
@@ -273,8 +287,6 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       response = "Reap cooldown updated to {h} hours.".format(h=cooldown)
       beginMessage = await message.channel.fetch_message(db[game][4])
       if beginMessage != None:
-        slowdown = min(21600,int(3600*cooldown))
-        await message.channel.edit(slowmode_delay=slowdown)
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass

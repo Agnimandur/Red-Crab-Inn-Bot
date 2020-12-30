@@ -54,6 +54,9 @@ An admin forcibly ends the ongoing game.
 #### reset [users]
 An admin can type "reset" along with @ing a list of [users] to manually reset all their scores to 0.
 
+#### adminify [users]
+An admin can make the @ed users reaper-admins!
+
 <br />
 
 #### reap
