@@ -224,7 +224,7 @@ async def reaper(message):
     await sendLogo(message.channel)
     return openingcrawl(game),True
   #promote to reaper-admin
-  elif admin and text.startswith('adminify'):
+  elif (admin or message.author.guild_permissions.administrator) and text.startswith('adminify'):
     try:
       reaperadmin = None
       for role in message.guild.roles:
