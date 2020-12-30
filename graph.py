@@ -12,15 +12,17 @@ def graph(events,guild,top):
   dx = [[0] for i in range(0,len(top))]
   dy = [[0] for i in range(0,len(top))]
   for e in events:
-    i = top.index(e[2])
-    dx[i].append(e[0])
-    dy[i].append(e[1])
+    try:
+      i = top.index(e[2])
+      dx[i].append(e[0])
+      dy[i].append(e[1])
+    except:
+      pass
 
-  for p in top:
-    member = guild.get_member(p)
+  for i in range(0,len(top)):
+    member = guild.get_member(top[i])
     if member != None:
       name = member.name+"#"+member.discriminator
-      i = top.index(p)
       plt.plot(dx[i],dy[i],label=name)
   plt.xlabel("Time")
   plt.ylabel("Score")
