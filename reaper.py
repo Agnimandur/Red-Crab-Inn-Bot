@@ -297,8 +297,6 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       response = "Reap cooldown updated to {s} seconds.".format(s=cooldown)
       beginMessage = await message.channel.fetch_message(db[game][4])
       if beginMessage != None:
-        slowdown = min(21600,cooldown)
-        await message.channel.edit(slowmode_delay=slowdown)
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
