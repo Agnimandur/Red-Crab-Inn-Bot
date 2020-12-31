@@ -143,6 +143,12 @@ async def endgame(message):
     await m.pin()
   except:
     print(m.guild.name + " doesn't have pin privileges")
+  
+  pinned = await message.channel.pins()
+  i = len(pinned)-1
+  while i > 30:
+    await pinned[i].unpin()
+    i -= 1
 
 #The amount of time before you can reap again
 def canreap(currentTime,yourID,guild):
