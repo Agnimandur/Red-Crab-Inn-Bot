@@ -278,16 +278,22 @@ async def reaper(message):
       response = "There was a failure in promotion 🙁."
   elif (admin or message.author.guild_permissions.administrator) and text.startswith('ban'):
     try:
-      banned = await get_banned(message.guild)
+      admin = None
+      for role in message.guild.roles:
+        if role.name=='reaper-admin':
+          admin = role
+          break
       for member in message.mentions:
-        await member.add_roles(banned)
+        if not member.guild_permissions.administrator and admin not in member.roles:
+          banned = await get_banned(message.guild)
+          await member.add_roles(banned)
       response = "Banning successful. If you'd like to appeal, complain to an admin."
     except:
       response = "Banning failed. Do it manually if necessary."
   elif (admin or message.author.guild_permissions.administrator) and text.startswith('unban'):
     try:
-      banned = await get_banned(message.guild)
       for member in message.mentions:
+        banned = await get_banned(message.guild)
         await member.remove_roles(banned)
       response = "Unbanning successful!"
     except:
@@ -446,8 +452,8 @@ async def reaper(message):
             response += "{name} currently has {score} points.\n".format(name=hisName,score=db[hisInfo][1])
           except:
             response += hisName + " has not reaped in this game yet.\n"
+      else:
+        response = search+" is not in this server."
     except:
       response = "Invalid use of the nextreap command. Type in help for documentation."
-    else:
-      response = search+" is not in this server."
   return response,False

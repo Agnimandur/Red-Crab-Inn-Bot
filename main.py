@@ -64,7 +64,7 @@ async def on_message(message):
     #if this message is a reaper command, let reaper.py handle it.
     response,beginGame = await reaper(message)
 
-    #get the bot's response and send it. If a new game has begun, update the 
+    #get the bot's response and send it.
     if len(response) > 0:
       botMessage = await message.channel.send(response)
       #begin the game
@@ -78,8 +78,7 @@ async def on_message(message):
   #initialize the reaper channel
   if message.content == '$reaper':
     reaperID = 0
-    allChannels = await message.guild.fetch_channels()
-    for c in allChannels:
+    for c in message.guild.channels:
       if c.name=='reaper':
         reaperID = c.id
         break
@@ -91,11 +90,13 @@ async def on_message(message):
       #if we can't, its because the bot doesn't have enough permissions.
       try:
         await message.channel.send("Reaper initialization in progress...")
-        category = await message.guild.create_category(name='Reaper')
-        await message.guild.create_text_channel(name='reaper',topic="This channel is for playing reaper. Type 'help' to learn how to play.",slowmode_delay=3,category=category)
-        await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.",category=category)
         reaperadmin = await message.guild.create_role(name='reaper-admin',mentionable=True)
-        await message.guild.create_role(name='banned-from-reaper',mentionable=False)
+        banned = await message.guild.create_role(name='banned-from-reaper',mentionable=False)
+        category = await message.guild.create_category(name='Reaper')
+        re = await message.guild.create_text_channel(name='reaper',topic="This channel is for playing reaper. Type 'help' to learn how to play.",slowmode_delay=3,category=category)
+        await re.set_permissions(banned,read_messages=True,send_messages=False)
+        rd = await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.",category=category)
+        await rd.set_permissions(banned,read_messages=True,send_messages=False)
         for m in message.guild.members:
           if not m.bot and m.guild_permissions.administrator:
             await m.add_roles(reaperadmin)
