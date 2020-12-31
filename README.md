@@ -73,6 +73,10 @@ The number of points you get is the number of seconds between the time of your r
 #### timer
 Find the current point value of a reap (in milliseconds).
 
+#### leaderboard
+Find the current top10 leaderboard in an ongoing game, displayed as a fancy Embed!
+<img alt="leaderboard example" src="leaderboard.PNG">
+
 #### nextreap=[name]
 Find the time remaining before you can reap again. If the optional [name] parameter is provided, it finds the time before the next reap of person [name].
 
