@@ -28,9 +28,8 @@ def graph(events,guild,top):
   plt.ylabel("Score")
   if len(top)>0:
     plt.legend()
-  image = "RG"+str(guild.id)+".png"
+  image = "rg/RG"+str(guild.id)+".png"
   plt.savefig(image)
   plt.close()
 
   return discord.File(image,filename=guild.name + " Results Graph.png")
-  

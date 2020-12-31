@@ -111,7 +111,7 @@ async def endgame(message):
   del db[game]
 
   #create a file for final results
-  result = "RESULTS"+server+".txt"
+  result = "results/RESULTS"+server+".txt"
   f = open(result,"w+")
   f.write(message.guild.name + " Final Standings: \n")
   for person in rankList:
