@@ -1,5 +1,5 @@
 import os
-os.environ['MPLCONFIGDIR'] = "C:/Users/Reaper/Pictures/RCI"
+os.environ['MPLCONFIGDIR'] = "rg"
 import matplotlib.pyplot as plt
 import discord
 
