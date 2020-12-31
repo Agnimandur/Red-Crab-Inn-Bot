@@ -57,6 +57,12 @@ An admin can type "reset" along with @ing a list of [users] to manually reset al
 #### adminify [users]
 An admin can make the @ed users reaper-admins!
 
+#### ban [users]
+Ban the @ed users from typing in the #reaper or #reaper discussion channel.
+
+#### unban [users]
+Unban the @ed users.
+
 <br />
 
 #### reap
@@ -67,8 +73,8 @@ The number of points you get is the number of seconds between the time of your r
 #### timer
 Find the current point value of a reap (in milliseconds).
 
-#### nextreap
-Find the time remaining before you can reap again.
+#### nextreap=[name]
+Find the time remaining before you can reap again. If the optional [name] parameter is provided, it finds the time before the next reap of person [name].
 
 #### rank=[name]
 Find out your current point total, and your current rank in the game! If the optional [name] parameter is provided, it finds the score of person [name].

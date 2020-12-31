@@ -4,6 +4,8 @@ from replit import db
 import time
 from datetime import timedelta
 from graph import graph
+from help import reaper_help
+from help import make_embed
 import random
 
 #default parameters
@@ -27,6 +29,27 @@ def leaderboard(guild):
       temp.append([db[key][1],userID])
   temp.sort(reverse=True)
   return temp
+def leaderboardEmbed(guild):
+  rankList = leaderboard(guild)
+  if len(rankList)==0:
+    return None
+  ranks = ""
+  names = ""
+  points = ""
+  i = 0
+  for person in rankList:
+    if i==min(len(rankList),10):
+      break
+    #skip people who aren't in the server anymore
+    member = guild.get_member(person[1])
+    if member==None:
+      continue
+    ranks += "{pos}.\n".format(pos=i+1)
+    names += "{name}\n".format(name=member.nick if member.nick != None else member.name)
+    points += "`{points}`\n".format(points=person[0])
+    i += 1
+  embed = make_embed(title="**Leaderboard**",description="Top 10 reaper leaderboard. The target to win is **{p}** points.".format(p=db["REAPER GAME "+str(guild.id)][2])).add_field(name="**Rank**",value=ranks,inline=True).add_field(name="**Players**",value=names,inline=True).add_field(name="**Points**",value=points,inline=True)
+  return embed
 
 #determine the modifier to the score (odds provided by kevinmathz)
 def getmodifier(game):
@@ -76,6 +99,7 @@ async def endgame(message):
   blitz = True if "BLITZ "+game in db.keys() else False
 
   rankList = leaderboard(message.guild)
+  embed = leaderboardEmbed(message.guild)
   champion = 482581806143766529
   if len(rankList)>0:
     champion = rankList[0][1]
@@ -114,17 +138,16 @@ async def endgame(message):
     files.append(image)
 
   #send the message and files
-  m = await message.channel.send(content=response,files=files)
+  m = await message.channel.send(content=response,files=files,embed=embed)
   try:
     await m.pin()
   except:
     print(m.guild.name + " doesn't have pin privileges")
 
 #The amount of time before you can reap again
-def canreap(currentTime,message):
-  yourID = str(message.author.id)
-  yourInfo = str(message.guild.id) + " " + yourID
-  game = "REAPER GAME " + str(message.guild.id)
+def canreap(currentTime,yourID,guild):
+  yourInfo = str(guild.id) + " " + str(yourID)
+  game = "REAPER GAME " + str(guild.id)
   if yourInfo not in db.keys() or currentTime-db[yourInfo][0] >= db[game][1]*3600000:
     return ""
   else:
@@ -138,7 +161,19 @@ def find(text,i):
     return None
   else:
     return f
-  
+
+async def get_banned(guild):
+  try:
+    banned = None
+    for role in guild.roles:
+      if role.name == 'banned-from-reaper':
+        banned = role
+        break
+    if banned == None:
+      banned = await guild.create_role(name='banned-from-reaper')
+    return banned
+  except:
+    return None
 #keys are server id + " " + user id
 #values are (time,score) tuples
 #gamekey is "REAPER GAME "+server and gamevalue is (current time, time between reaps, points to win, begin-game-message-id)
@@ -204,6 +239,8 @@ async def reaper(message):
       towin = max(points,10)
       if blitz:
         towin = min(points,5000)
+      else:
+        towin = min(points,10000000)
     except:
       pass
     
@@ -239,38 +276,25 @@ async def reaper(message):
         response = "User{plural} sucessfully promoted to reaper-admin!".format(plural='' if len(message.mentions)==1 else 's')
     except:
       response = "There was a failure in promotion 🙁."
-  #build the help box in markdown
-  elif text == 'help':
-    response = """For a thorough overview, check out the Github README available here: <https://github.com/Agnimandur/Red-Crab-Inn-Bot>```
-Admin (those with the @reaper-admin role):
-
-  begin game h=[h] p=[p] rng=[rng]
-  Begin the game! The reap cooldown is [h] hours, and the points to win is [p]. If [rng]=0, reap multipliers and free reaps are disabled. These games will likely take days if not weeks to finish.
-  
-  begin blitz game s=[s] p=[p] rng=[rng]
-  Begin a blitz reaper game! The reap cooldown is [s] seconds. In blitz all participants compete simultaneously from beginning to end. Usually, a blitz game takes between 2 minutes and 2 hours to finish. A fancy results graph is also displayed.
-
-                    
-  h=[h]             Change the reap cooldown to [h] hours.
-  s=[s]             Change the reap cooldown to [s] seconds.
-  p=[p]             Change the points needed to win to [p].
-  rng=[rng]         Turn randomness on or off.
-  end game          End the game manually.
-  reset [users]     Resets the score of all @ed [users].
-  adminify [users]  Makes [users] reaper-admins.
-    
-Contestant (these only work in the #reaper or #reaper-discussion channel):
-  reap              Reap to gain points! The points are equal to the time
-                    difference between your reap and the most recent reap.
-                    There is a cooldown, so reap wisely to maximize points!
-                    Avoid getting "sniped" and wasting precious reaps.
-  timer             The current value of a reap.
-  nextreap          The time before you can next reap.
-  rank=[name]       Your current rank in the ongoing game. If [name] is given,
-                    it finds the scores of aLL players with that [name].
-  leaderboard       The current top 10 leaderboard.
-    ```
-    """
+  elif (admin or message.author.guild_permissions.administrator) and text.startswith('ban'):
+    try:
+      banned = await get_banned(message.guild)
+      for member in message.mentions:
+        await member.add_roles(banned)
+      response = "Banning successful. If you'd like to appeal, complain to an admin."
+    except:
+      response = "Banning failed. Do it manually if necessary."
+  elif (admin or message.author.guild_permissions.administrator) and text.startswith('unban'):
+    try:
+      banned = await get_banned(message.guild)
+      for member in message.mentions:
+        await member.remove_roles(banned)
+      response = "Unbanning successful!"
+    except:
+      response = "Unbanning failed. Do it manually if necessary."
+  elif text.startswith('help'):
+    embed = reaper_help(text)
+    await message.channel.send(embed=embed)
   if game not in db.keys():
     return response,False
 
@@ -332,16 +356,29 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       if hisInfo in db.keys():
         db[hisInfo] = (0,0)
     response = "Reset successfully completed!"
-  elif text=='nextreap':
-    nextReap = canreap(currentTime,message)
+  #find your next reap time
+  elif text == 'nextreap':
+    nextReap = canreap(currentTime,yourID,message.guild)
     if len(nextReap) == 0:
       response = "Hi <@{author}>, your reap is not on cooldown!".format(author=yourID)
     else:
       response = "Hi <@{author}>, you need to wait {delta} before you can next reap.".format(author=yourID,delta=nextReap)
+  elif text.startswith('nextreap='):
+    try:
+      name = str(text[9:])
+      members = await message.guild.query_members(name,limit=5)
+      for m in members:
+        nextReap = canreap(currentTime,m.id,message.guild)
+        if len(nextReap) == 0:
+          response += "{name}\'s reap is not on cooldown!\n".format(name=m.name)
+        else:
+          response += "{name} needs to wait {delta} until their next reap.\n".format(name=m.name,delta=nextReap)
+    except:
+      response = "Invalid use of the nextreap command. Type in help for documentation."
   #reap!
   elif text.startswith('reap') and len(text) <= 6 and channel=='reaper':
     #can't reap
-    nextReap = canreap(currentTime,message)
+    nextReap = canreap(currentTime,yourID,message.guild)
     if len(nextReap) > 0:
       response="Hi <@{author}>, please wait {delta} before reaping again.".format(author=yourID,delta=nextReap)
     else:
@@ -384,18 +421,8 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
   #print out a top10 current leaderboard
   elif text=='leaderboard':
     rankList = leaderboard(message.guild)
-    response = "**Reaper Leaderboard**\n"
-    i = 0
-    for person in rankList:
-      if i==min(len(rankList),10):
-        break
-      #skip people who aren't in the server anymore
-      member = message.guild.get_member(person[1])
-      if member==None:
-        continue
-      add = "{pos}. {name} with {points} pts\n".format(pos=i+1,name=member.nick if member.nick != None else member.name,points=person[0])
-      response += add
-      i += 1
+    embed = leaderboardEmbed(message.guild)
+    await message.channel.send(embed=embed)
   #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():
@@ -406,18 +433,21 @@ Contestant (these only work in the #reaper or #reaper-discussion channel):
       response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
   #find the scores of other people
   elif text.startswith('rank=') and len(text)>9:
-    search = message.content[5:]
-    #all members whose names start with "search"
-    members = await message.guild.query_members(search,limit=5)
-    if len(members)>0:
-      for member in members:
-        hisInfo = server + " " + str(member.id)
-        hisName = member.name if member.nick==None else member.nick
-        #check if they're in the game or not
-        try:
-          response += "{name} currently has {score} points.\n".format(name=hisName,score=db[hisInfo][1])
-        except:
-          response += hisName + " has not reaped in this game yet.\n"
+    try:
+      search = message.content[5:]
+      #all members whose names start with "search"
+      members = await message.guild.query_members(search,limit=5)
+      if len(members)>0:
+        for member in members:
+          hisInfo = server + " " + str(member.id)
+          hisName = member.name if member.nick==None else member.nick
+          #check if they're in the game or not
+          try:
+            response += "{name} currently has {score} points.\n".format(name=hisName,score=db[hisInfo][1])
+          except:
+            response += hisName + " has not reaped in this game yet.\n"
+    except:
+      response = "Invalid use of the nextreap command. Type in help for documentation."
     else:
       response = search+" is not in this server."
   return response,False
