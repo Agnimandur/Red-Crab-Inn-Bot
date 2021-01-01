@@ -52,7 +52,7 @@ def ball():
 #the bot is online now!
 @client.event
 async def on_ready():
-  print("Successful login as {0.user}".format(client))
+  print("Successful login as {name}".format(name=str(client.user)))
 
 @client.event
 async def on_message(message):
@@ -93,7 +93,7 @@ async def on_message(message):
         reaperadmin = await message.guild.create_role(name='reaper-admin',mentionable=True)
         banned = await message.guild.create_role(name='banned-from-reaper',mentionable=False)
         category = await message.guild.create_category(name='Reaper')
-        re = await message.guild.create_text_channel(name='reaper',topic="This channel is for playing reaper. Type 'help' to learn how to play.",slowmode_delay=3,category=category)
+        re = await message.guild.create_text_channel(name='reaper',topic="This channel is for playing reaper. Type 'help' to learn how to play.",slowmode_delay=1,category=category)
         await re.set_permissions(banned,read_messages=True,send_messages=False)
         rd = await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.",category=category)
         await rd.set_permissions(banned,read_messages=True,send_messages=False)
