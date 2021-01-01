@@ -100,7 +100,7 @@ async def on_message(message):
         for m in message.guild.members:
           if not m.bot and m.guild_permissions.administrator:
             await m.add_roles(reaperadmin)
-        await message.channel.send("Reaper channels and reaper-admin role created! All admins are automatically a {ra}!".format(ra=reaperadmin.mention))
+        await message.channel.send("Reaper channels and reaper-admin role created! All admins are automatically a {ra}! Type in $help for more information.".format(ra=reaperadmin.mention))
       except:
         response = "Unable to comply. The bot doesn't have the required permission 😭."
         await message.channel.send(response)
@@ -150,7 +150,7 @@ async def on_message(message):
     totalPeople = sum([(1 if not x.bot else 0) for x in client.users])
     await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=str(totalPeople)))
   #send the help box in markdown
-  elif message.content.lower() == 'help':
+  elif message.content.lower() == '$help':
     embed = make_embed(title="Miscellaneous Commands",description="These are commands for initializing the Reaper game, and for other random things. All these commands have a **$** prefix.").add_field(name="**Reaper Related**",value="""
 - $reaper. Initialize the Reaper channels and roles in your server.
 - $leave. Remove the Red Crab Inn bot and all associated roles and channels from your server. All history **will be lost**!""").add_field(name="**Random Commands**",value="""
