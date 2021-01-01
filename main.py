@@ -13,14 +13,12 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents,activity=discord.Game(name="Reaper"))
 
-#get a random quote from an api
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
   json_data = json.loads(response.text)
   quote = '"' + json_data[0]['q'] + '"' + " - " + json_data[0]['a']
   return quote
 
-#get a random Donald Trump quote from an api
 def get_trump():
   response = requests.get("https://tronalddump.io/random/quote")
   response2 = requests.get("https://api.whatdoestrumpthink.com/api/v1/quotes/random")
@@ -31,7 +29,6 @@ def get_trump():
     quote = '"'+json_data2['message']+'"'
   return quote
 
-#get a random Kanye West quote from an api
 def get_kanye():
   response = requests.get("https://api.kanye.rest/")
   json_data = json.loads(response.text)
@@ -39,6 +36,12 @@ def get_kanye():
   if quote[-1] != '.':
     quote += '.'
   quote = '"'+quote+'"'
+  return quote
+
+def get_ron():
+  response = requests.get("http://ron-swanson-quotes.herokuapp.com/v2/quotes")
+  json_data = json.loads(response.text)
+  quote = '"'+json_data[0]+'"'
   return quote
 
 #8ball function
@@ -138,6 +141,10 @@ async def on_message(message):
   elif message.content == '$kanye':
     quote = get_kanye()
     await message.channel.send(quote)
+  #get a ron swanson (parks and recreation character) quote
+  elif message.content == '$ron':
+    quote = get_ron()
+    await message.channel.send(quote)
   #the 8ball will answer your query
   elif message.content == '$8ball':
     response = ball()
@@ -151,12 +158,13 @@ async def on_message(message):
     await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=str(totalPeople)))
   #send the help box in markdown
   elif message.content.lower() == '$help':
-    embed = make_embed(title="Miscellaneous Commands",description="These are commands for initializing the Reaper game, and for other random things. All these commands have a **$** prefix.").add_field(name="**Reaper Related**",value="""
+    embed = make_embed(title="Miscellaneous Commands",description="These are commands for initializing the Reaper game, and for other random things. All these commands have a **$** prefix. For in game commands, go to the #reaper channel.").add_field(name="**Reaper Related**",value="""
 - $reaper. Initialize the Reaper channels and roles in your server.
 - $leave. Remove the Red Crab Inn bot and all associated roles and channels from your server. All history **will be lost**!""").add_field(name="**Random Commands**",value="""
 - $quote. Get an inspirational quote!
 - $trump. Get a Donald Trump quote.
 - $kanye. Get a Kanye West quote.
+- $ron. Get a Ron Swanson (Parks and Recreation character) quote.
 - $8ball. Ask the 8Ball something!
 - $github. Get a link to this bot's public github repository.
 - $servers. Find out how many servers the Red Crab Inn is in!""")

@@ -5,13 +5,16 @@ The primary function of the bot is to play the game *[Reaper](https://artofprobl
 To add this bot to your discord server, use **[this link](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=2080894065&scope=bot)**. A list of Reaper specific commands are at the bottom of this README.
 
 #### $quote
-Receive an inspirational quote!
+Receive an inspirational quote.
 
 #### $trump
-Receive a Donald Trump quote!
+Receive a Donald Trump quote.
 
 #### $kanye
-Receive a Kanye West quote!
+Receive a Kanye West quote.
+
+#### $ron
+Receive a Ron Swanson (Parks and Recreation character) quote.
 
 #### $8ball
 The Magic 8 Ball will answer your query.
@@ -37,8 +40,7 @@ A server admin can use this command to purge the Red Crab Inn and all its creati
 An admin starts a new Reaper game. The reap cooldown is [h] hours, and the first to reach [p] points wins. If [rng] is 0, then there will be no random reap multipliers or free reaps! All parameters are optional. The default value of [h] is 12, [p] is 43200 (12 hours to reap), and [rng] is 1 (enabled).
 
 #### begin blitz game s=[s] p=[p] rng=[rng]
-An admin starts a new **Blitz** Reaper game. The reap cooldown is [s] seconds, and the first to reach [p] points wins. The difference between blitz and standard games is that in blitz, players play continuously from the beginning to the end of the game. Blitz games usually last from 2 minutes to an hour. In blitz reaper, keeping track of your opponent's timers is critical! The default value of [s] is 10, [p] is 120 (2 minutes to reap), and [rng] is 1 (enabled). At the end of the game, a results graph is also displayed like the example below.
-<img alt="results graph" src="graph.png">
+An admin starts a new **Blitz** Reaper game. The reap cooldown is [s] seconds, and the first to reach [p] points wins. The difference between blitz and standard games is that in blitz, players play continuously from the beginning to the end of the game. Blitz games usually last from 2 minutes to an hour. In blitz reaper, keeping track of your opponent's timers is critical! The default value of [s] is 10, [p] is 120 (2 minutes to reap), and [rng] is 1 (enabled).
 
 #### h=[h] or s=[s]
 An admin changes the reap cooldown to [h] hours (standard games only) or [s] seconds (blitz games only).
