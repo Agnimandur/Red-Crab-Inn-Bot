@@ -44,8 +44,8 @@ def leaderboardEmbed(guild):
     member = guild.get_member(person[1])
     if member==None:
       continue
-    ranks += "{pos}.\n".format(pos=i+1)
-    names += "{name}\n".format(name=member.nick if member.nick != None else member.name)
+    ranks += "`{pos}.`\n".format(pos=i+1)
+    names += "`{name}`\n".format(name=member.nick if member.nick != None else member.name)
     points += "`{points}`\n".format(points=person[0])
     i += 1
   embed = make_embed(title="**Leaderboard**",description="Top 10 reaper leaderboard. The target to win is **{p}** points.".format(p=db["REAPER GAME "+str(guild.id)][2])).add_field(name="**Rank**",value=ranks,inline=True).add_field(name="**Players**",value=names,inline=True).add_field(name="**Points**",value=points,inline=True)
