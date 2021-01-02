@@ -267,7 +267,7 @@ async def reaper(message):
     await sendLogo(message.channel)
     return openingcrawl(game),True
   #promote to reaper-admin
-  elif (admin or message.author.guild_permissions.administrator) and text.startswith('adminify'):
+  elif (admin or message.author.guild_permissions.administrator) and text.startswith('adminify') and len(message.mentions)>0:
     try:
       reaperadmin = None
       for role in message.guild.roles:
@@ -276,13 +276,10 @@ async def reaper(message):
           break
       for member in message.mentions:
         await member.add_roles(reaperadmin)
-      if len(message.mentions)==0:
-        response = "@ someone to give the reaper-admin role to!"
-      else:
-        response = "User{plural} sucessfully promoted to reaper-admin!".format(plural='' if len(message.mentions)==1 else 's')
+      response = "User{plural} sucessfully promoted to reaper-admin!".format(plural='' if len(message.mentions)==1 else 's')
     except:
       response = "There was a failure in promotion 🙁."
-  elif (admin or message.author.guild_permissions.administrator) and text.startswith('ban'):
+  elif (admin or message.author.guild_permissions.administrator) and text.startswith('ban') and len(message.mentions)>0:
     try:
       admin = None
       for role in message.guild.roles:
@@ -296,7 +293,7 @@ async def reaper(message):
       response = "Banning successful. If you'd like to appeal, complain to an admin."
     except:
       response = "Banning failed. Do it manually if necessary."
-  elif (admin or message.author.guild_permissions.administrator) and text.startswith('unban'):
+  elif (admin or message.author.guild_permissions.administrator) and text.startswith('unban') and len(message.mentions)>0:
     try:
       for member in message.mentions:
         banned = await get_banned(message.guild)
@@ -362,7 +359,7 @@ async def reaper(message):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif admin and 'reset' in text:
+  elif admin and text.startswith('reset') and len(message.mentions)>0:
     for member in message.mentions:
       hisInfo = server + " " + str(member.id)
       if hisInfo in db.keys():
