@@ -6,7 +6,7 @@ from datetime import timedelta
 from graph import graph
 from help import reaper_help
 from help import make_embed
-import random
+from random import randint
 
 #default parameters
 H = 12 #12 hours between reaps
@@ -55,7 +55,7 @@ def leaderboardEmbed(guild):
 def getmodifier(game):
   if db[game][3]==0:
     return 1
-  d1000 = random.randint(1,1000)
+  d1000 = randint(1,1000)
   if d1000 <= 100:
     return 2
   elif d1000 <= 150:
@@ -73,7 +73,7 @@ def getmodifier(game):
 def getfree(game):
   if db[game][3]==0:
     return False
-  return (random.randint(1,50)==1)
+  return (randint(1,50)==1)
 
 #the begin game message (can be edited later on)
 def openingcrawl(game):
