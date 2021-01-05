@@ -6,6 +6,7 @@ import random
 from replit import db
 from keep_alive import keep_alive
 from reaper import reaper
+from reaper import cache
 from help import make_embed
 
 #set up the bot
@@ -109,6 +110,7 @@ async def on_message(message):
         for m in message.guild.members:
           if not m.bot and m.guild_permissions.administrator:
             await m.add_roles(reaperadmin)
+        cache[message.guild.id] = (reaperadmin,banned)
         await message.channel.send("Reaper channels and reaper-admin role created! All admins are automatically a {ra}! Type in $help for more information.".format(ra=reaperadmin.mention))
       except:
         response = "Unable to comply. The bot doesn't have the required permission 😭."
@@ -130,9 +132,9 @@ async def on_message(message):
       if role.name.lower().find('reaper') >= 0:
         await role.delete()
     #purge the database
-    gid = str(g.id)
+    del cache[g.id]
     for key in db.keys():
-      if key.find(gid) >= 0:
+      if key.find(str(g.id)) >= 0:
         del db[key]
     await g.leave()
   #get a quote
