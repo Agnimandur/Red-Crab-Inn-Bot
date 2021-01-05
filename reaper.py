@@ -433,7 +433,10 @@ async def reaper(message):
   elif text=='leaderboard':
     rankList = leaderboard(message.guild)
     embed = leaderboardEmbed(message.guild)
-    await message.channel.send(embed=embed)
+    try:
+      await message.channel.send(embed=embed)
+    except:
+      await message.channel.send("The leaderboard is empty!")
   #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():
