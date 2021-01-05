@@ -61,6 +61,9 @@ An admin can type "reset" along with @ing a list of [users] to manually reset al
 #### adminify [users]
 An admin can make the @ed users reaper-admins!
 
+#### demote [users]
+A **server administrator** can use this command to take away the reaper-admin role from the @ed users.
+
 #### ban [users]
 Ban the @ed users from typing in the #reaper or #reaper discussion channel.
 

@@ -13,6 +13,8 @@ H = 12 #12 hours between reaps
 P = 43200 #first to reap 12 hours
 BS = 10 #10 seconds between reaps
 BP = 120 #first to reap 2 minutes
+AGNIMANDUR = 482581806143766529
+cache = {} #guild id to a tuple of (reaper-admin role, banned-from-reaper role)
 
 #send the reaper logo
 async def sendLogo(channel):
@@ -100,7 +102,7 @@ async def endgame(message):
 
   rankList = leaderboard(message.guild)
   embed = leaderboardEmbed(message.guild)
-  champion = 482581806143766529
+  champion = AGNIMANDUR
   if len(rankList)>0:
     champion = rankList[0][1]
 
@@ -168,18 +170,20 @@ def find(text,i):
   else:
     return f
 
-async def get_banned(guild):
-  try:
+#admin role, banned role
+def role_cache(guild):
+  if guild.id not in cache:
+    admin = None
     banned = None
-    for role in guild.roles:
-      if role.name == 'banned-from-reaper':
-        banned = role
-        break
-    if banned == None:
-      banned = await guild.create_role(name='banned-from-reaper')
-    return banned
-  except:
-    return None
+    for r in guild.roles:
+      if r.name=='reaper-admin':
+        admin = r
+      elif r.name=='banned-from-reaper':
+        banned = r
+    cache[guild.id] = (admin,banned)
+  return cache[guild.id]
+
+
 #keys are server id + " " + user id
 #values are (time,score) tuples
 #gamekey is "REAPER GAME "+server and gamevalue is (current time, time between reaps, points to win, begin-game-message-id)
@@ -193,16 +197,13 @@ async def reaper(message):
   game = "REAPER GAME "+server
   blitz = True if "BLITZ "+game in db.keys() else False
   yourInfo = server + " " + yourID
+  roles = role_cache(message.guild)
 
   #get the time
   currentTime = int(round(time.time() * 1000))
 
   #check if the user is an admin
-  admin = False
-  for role in message.author.roles:
-    if role.name == 'reaper-admin':
-      admin = True
-      break
+  admin = roles[0] in message.author.roles
   #Reaper Test Server Only1
   if message.guild.id==791479138447917076:
     admin = True
@@ -266,38 +267,39 @@ async def reaper(message):
       db["BLITZ "+game] = [currentTime]
     await sendLogo(message.channel)
     return openingcrawl(game),True
-  #promote to reaper-admin
-  elif (admin or message.author.guild_permissions.administrator) and text.startswith('adminify') and len(message.mentions)>0:
+  #demote an admin
+  elif text.startswith('demote') and (message.author.id==AGNIMANDUR or message.author.guild_permissions.administrator):
     try:
-      reaperadmin = None
-      for role in message.guild.roles:
-        if role.name == 'reaper-admin':
-          reaperadmin = role
-          break
       for member in message.mentions:
-        await member.add_roles(reaperadmin)
+        await member.remove_roles(roles[0])
+      response = "User{plural} sucessfully demoted!".format(plural='' if len(message.mentions)==1 else 's')
+    except:
+      response = "There was a failure in demotion 🙁."
+  #promote to reaper-admin
+  elif text.startswith('adminify') and (admin or message.author.guild_permissions.administrator) and len(message.mentions)>0:
+    try:
+      for member in message.mentions:
+        await member.add_roles(roles[0])
       response = "User{plural} sucessfully promoted to reaper-admin!".format(plural='' if len(message.mentions)==1 else 's')
     except:
       response = "There was a failure in promotion 🙁."
-  elif (admin or message.author.guild_permissions.administrator) and text.startswith('ban') and len(message.mentions)>0:
+  elif text.startswith('ban') and (admin or message.author.guild_permissions.administrator) and len(message.mentions)>0:
     try:
-      admin = None
-      for role in message.guild.roles:
-        if role.name=='reaper-admin':
-          admin = role
-          break
+      x = 0
       for member in message.mentions:
-        if not member.guild_permissions.administrator and admin not in member.roles:
-          banned = await get_banned(message.guild)
-          await member.add_roles(banned)
-      response = "Banning successful. If you'd like to appeal, complain to an admin."
+        if roles[0] not in member.roles:
+          await member.add_roles(roles[1])
+          x += 1
+      if x > 0:
+        response = "Banning successful. If you'd like to appeal, complain to an admin."
+      else:
+        response = "You can't ban a reaper-admin!"
     except:
       response = "Banning failed. Do it manually if necessary."
-  elif (admin or message.author.guild_permissions.administrator) and text.startswith('unban') and len(message.mentions)>0:
+  elif text.startswith('unban') and (admin or message.author.guild_permissions.administrator) and len(message.mentions)>0:
     try:
       for member in message.mentions:
-        banned = await get_banned(message.guild)
-        await member.remove_roles(banned)
+        await member.remove_roles(roles[1])
       response = "Unbanning successful!"
     except:
       response = "Unbanning failed. Do it manually if necessary."
@@ -309,11 +311,11 @@ async def reaper(message):
 
   #These commands only work in ongoing games
   #end the game
-  if admin and text == 'end game' and channel=='reaper':
+  if text == 'end game' and admin and channel=='reaper':
     await endgame(message)
   #change the number of hours between reaps or the points needed to win (try/except statements to check valid inputs)
   #update the database (tuples are immutable!)
-  elif admin and text.startswith('h=') and channel=='reaper' and not blitz:
+  elif text.startswith('h=') and admin and channel=='reaper' and not blitz:
     try:
       cooldown = min(max(float(text[2:]),0.003),1000)
       db[game] = (db[game][0],cooldown,db[game][2],db[game][3],db[game][4])
@@ -323,7 +325,7 @@ async def reaper(message):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif admin and text.startswith('s=') and channel=='reaper' and blitz:
+  elif text.startswith('s=') and admin and channel=='reaper' and blitz:
     try:
       cooldown = min(max(int(text[2:]),5),500)
       db[game] = (db[game][0],cooldown/3600,db[game][2],db[game][3],db[game][4])
@@ -333,7 +335,7 @@ async def reaper(message):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif admin and text.startswith('p=') and channel=='reaper':
+  elif text.startswith('p=') and admin and channel=='reaper':
     try:
       towin = max(10,int(text[2:]))
       if blitz:
@@ -345,7 +347,7 @@ async def reaper(message):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif admin and text.startswith('rng=') and channel=='reaper':
+  elif text.startswith('rng=') and admin and channel=='reaper':
     try:
       random = int(text[4:])
       if 0 <= random <= 1:
@@ -359,7 +361,7 @@ async def reaper(message):
         await beginMessage.edit(content=openingcrawl(game))
     except:
       pass
-  elif admin and text.startswith('reset') and len(message.mentions)>0:
+  elif text.startswith('reset') and admin and len(message.mentions)>0:
     for member in message.mentions:
       hisInfo = server + " " + str(member.id)
       if hisInfo in db.keys():
@@ -441,7 +443,7 @@ async def reaper(message):
       rank = rankList.index(int(yourID))+1
       response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
   #find the scores of other people
-  elif text.startswith('rank=') and len(text)>9:
+  elif text.startswith('rank=') and len(text)>8:
     try:
       search = message.content[5:]
       #all members whose names start with "search"
@@ -458,5 +460,5 @@ async def reaper(message):
       else:
         response = search+" is not in this server."
     except:
-      response = "Invalid use of the nextreap command. Type in help for documentation."
+      response = "Invalid use of the rank command. Type in help for documentation."
   return response,False

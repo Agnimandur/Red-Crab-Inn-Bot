@@ -44,6 +44,12 @@ def get_ron():
   quote = '"'+json_data[0]+'"'
   return quote
 
+def get_starwars():
+  response = requests.get("http://swquotesapi.digitaljedi.dk/api/SWQuote/RandomStarWarsQuote")
+  json_data = json.loads(response.text)
+  quote = json_data['starWarsQuote']
+  return quote
+
 #8ball function
 ballFile = open('8ball.txt','r')
 ballList = ballFile.readlines()
@@ -145,6 +151,10 @@ async def on_message(message):
   elif message.content == '$ron':
     quote = get_ron()
     await message.channel.send(quote)
+  #get a canon star wars quote
+  elif message.content == '$starwars':
+    quote = get_starwars()
+    await message.channel.send(quote)
   #the 8ball will answer your query
   elif message.content == '$8ball':
     response = ball()
@@ -165,6 +175,7 @@ async def on_message(message):
 - $trump. Get a Donald Trump quote.
 - $kanye. Get a Kanye West quote.
 - $ron. Get a Ron Swanson (Parks and Recreation character) quote.
+- $starwars. Get a quote from a random Star Wars character!
 - $8ball. Ask the 8Ball something!
 - $github. Get a link to this bot's public github repository.
 - $servers. Find out how many servers the Red Crab Inn is in!""")

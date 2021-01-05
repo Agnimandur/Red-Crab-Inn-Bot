@@ -20,7 +20,8 @@ def generic():
 - adminify [users]
 - reset [users]
 - ban [users]
-- unban [users]```""").add_field(name="**Reaping**",value="""
+- unban [users]
+- demote [users]```""").add_field(name="**Reaping**",value="""
   ```
 - reap```
   """).add_field(name="**Ingame analysis**",value="""
@@ -49,6 +50,9 @@ def reaper_help(text):
       elif command.startswith('adminify'):
         embed=make_embed(title="**Adminify**",description="Use this command to promote new reaper-admins.").add_field(name="**Parameters**",value="""
 - [users]. A list of @ed users who you want to promote.""")
+      elif command.startswith('demote'):
+        embed=make_embed(title="**Demote**",description="A server administrator can use this command to take away the reaper-admin role.").add_field(name="**Parameters**",value="""
+- [users]. A list of @ed users who you want to demote.""")
       elif command=='reset':
         embed=make_embed(title="**Reset**",description="Use this command to reset someone's score to 0 in a game.").add_field(name="**Parameters**",value="""
 - [users]. A list of @ed users whose scores you want to reset.""")
