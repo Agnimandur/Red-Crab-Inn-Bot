@@ -2,7 +2,7 @@ import discord
 from replit import db
 
 def make_embed(title,description):
-  return discord.Embed(color=0x71368a,title=title,description=description+"\n [Invite Me](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=2080894065&scope=bot) | [Join discord](https://discord.gg/5bbnUz6J2a) | [Github](https://github.com/Agnimandur/Red-Crab-Inn-Bot)").set_author(name='Reaper',url='https://github.com/Agnimandur/Red-Crab-Inn-Bot',icon_url='https://i.ibb.co/tPJM6DP/reaper-logo.png').set_footer(text="Made by Agnimandur#0053",icon_url="https://i.ibb.co/fd2L46j/iron-throne-christmas.jpg")
+  return discord.Embed(color=0x71368a,title=title,description=description+"\n [Invite Me](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=2080894065&scope=bot) | [Join the Discord](https://discord.gg/5bbnUz6J2a) | [Github](https://github.com/Agnimandur/Red-Crab-Inn-Bot) | [Vote on Top.gg](https://top.gg/bot/791162942459478016/vote)").set_author(name='Reaper',url='https://github.com/Agnimandur/Red-Crab-Inn-Bot',icon_url='https://i.ibb.co/tPJM6DP/reaper-logo.png').set_footer(text="Made by Agnimandur#0053",icon_url="https://i.ibb.co/fd2L46j/iron-throne-christmas.jpg")
 
 def generic():
   #color is dark purple
