@@ -14,8 +14,7 @@ def generic():
   ```
 - h=[h]
 - s=[s]
-- rng=[rng]
-- end game```""").add_field(name="**Game moderation**",value = """
+- rng=[rng]```""").add_field(name="**Game moderation**",value = """
   ```
 - adminify [users]
 - reset [users]
