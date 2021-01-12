@@ -165,13 +165,6 @@ async def on_message(message):
         end = message.content.find('?')
       yr = int(message.content[18:end])
       quote = get_year(yr)
-      if random.randint(1,2)==1 and message.guild.id==750565050636435466:
-        if yr==2020:
-          quote = "2020 is the year that Colin Galen reached IGM. <:orz:753647752365342860>"
-        elif yr==2021:
-          quote = "2021 is the year that Colin Galen reached LGM. <:orz:753647752365342860>"
-        elif yr==2022:
-          quote = "2022 is the year that Colin Galen hit the 4000 rating threshold on Codeforces. <:orz:753647752365342860>"
       await message.channel.send(quote)
     except:
       pass
