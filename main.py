@@ -154,11 +154,12 @@ async def on_message(message):
     for role in g.roles:
       if 'reaper' in role.name:
         await role.delete()
-    #purge the database
-    del cache[g.id]
-    for key in db.keys():
-      if str(g.id) in key:
-        del db[key]
+    #purge the database (if it exists)
+    if g.id in cache:
+      del cache[g.id]
+      for key in db.keys():
+        if str(g.id) in key:
+          del db[key]
     await g.leave()
   #get a quote
   if message.content == '$quote':
