@@ -129,6 +129,21 @@ async def on_message(message):
       await message.channel.send("Only an admin can do this!")
       return
     g = message.guild
+
+    await message.channel.send("Are you sure you want to remove the Red Crab Inn from your server? (yes/no)")
+    def check(m):
+      return m.author==message.author and m.channel==message.channel
+    abort = True
+    try:
+      conf = await client.wait_for('message',timeout=5.0,check=check)
+      if conf.content.lower()=='yes':
+        abort = False
+    except:
+      pass
+    if abort:
+      await message.channel.send("Leaving cancelled!")
+      return
+    
     await message.channel.send("What wonderful times we've shared together! Goodbye, and may the Seven smile upon you.")
     for channel in g.channels:
       if 'reaper' in channel.name:
