@@ -119,7 +119,7 @@ async def on_message(message):
           if not m.bot and m.guild_permissions.administrator:
             await m.add_roles(reaperadmin)
         cache[message.guild.id] = (reaperadmin,banned)
-        await message.channel.send("Reaper channels and reaper-admin role created! All admins are automatically a {ra}! Type in $help for more information.".format(ra=reaperadmin.mention))
+        await message.channel.send("Reaper channels and reaper-admin role created! All admins are automatically a reaper-admin! Type in $help for more information.")
       except:
         response = "Unable to comply. The bot doesn't have the required permission 😭."
         await message.channel.send(response)
