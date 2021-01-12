@@ -7,7 +7,7 @@ from replit import db
 from keep_alive import keep_alive
 from reaper import reaper
 from reaper import cache
-from help import make_embed
+from help import main_help
 
 #set up the bot
 intents = discord.Intents.default()
@@ -43,7 +43,7 @@ def get_ron():
   response = requests.get("http://ron-swanson-quotes.herokuapp.com/v2/quotes")
   json_data = json.loads(response.text)
   quote = '"'+json_data[0]+'"'
-  return quote
+  return quot
 
 def get_starwars():
   response = requests.get("http://swquotesapi.digitaljedi.dk/api/SWQuote/RandomStarWarsQuote")
@@ -51,13 +51,17 @@ def get_starwars():
   quote = json_data['starWarsQuote']
   return quote
 
-#8ball function
-ballFile = open('8ball.txt','r')
-ballList = ballFile.readlines()
-ballFile.close()
-def ball():
-  r = random.randint(0,19)
-  return ballList[r].strip('\n')
+def get_year(yr):
+  response = requests.get("http://numbersapi.com/{yr}/year?json".format(yr=yr))
+  json_data = json.loads(response.text)
+  quote = json_data['text']
+  return quote
+
+def get_math_trivia():
+  response = requests.get("http://numbersapi.com/random/math?json")
+  json_data = json.loads(response.text)
+  quote = json_data['text']
+  return quote
 
 #the bot is online now!
 @client.event
@@ -67,7 +71,11 @@ async def on_ready():
 @client.event
 async def on_message(message):
   #determine the server this message was sent in
-  game = "REAPER GAME "+str(message.guild.id)
+  try:
+    game = "REAPER GAME "+str(message.guild.id)
+  except:
+    print(message)
+    return
   if message.author.bot:
     return
   if message.channel.name == 'reaper' or message.channel.name == 'reaper-discussion':
@@ -123,18 +131,18 @@ async def on_message(message):
     g = message.guild
     await message.channel.send("What wonderful times we've shared together! Goodbye, and may the Seven smile upon you.")
     for channel in g.channels:
-      if channel.name.lower().find('reaper') >= 0:
+      if 'reaper' in channel.name:
         await channel.delete()
     for category in g.categories:
-      if category.name.lower().find('reaper') >= 0:
+      if category.name=='Reaper':
         await category.delete()
     for role in g.roles:
-      if role.name.lower().find('reaper') >= 0:
+      if 'reaper' in role.name:
         await role.delete()
     #purge the database
     del cache[g.id]
     for key in db.keys():
-      if key.find(str(g.id)) >= 0:
+      if str(g.id) in key:
         del db[key]
     await g.leave()
   #get a quote
@@ -145,6 +153,28 @@ async def on_message(message):
   elif message.content == '$trump':
     quote = get_trump()
     await message.channel.send(quote)
+  #random math trivia
+  elif message.content == '$mathtrivia':
+    quote = get_math_trivia()
+    await message.channel.send(quote)
+  #get a year based piece of trivia
+  elif message.content.startswith('$what happened in '):
+    try:
+      end = len(message.content)
+      if '?' in message.content:
+        end = message.content.find('?')
+      yr = int(message.content[18:end])
+      quote = get_year(yr)
+      if random.randint(1,2)==1 and message.guild.id==750565050636435466:
+        if yr==2020:
+          quote = "2020 is the year that Colin Galen reached IGM. <:orz:753647752365342860>"
+        elif yr==2021:
+          quote = "2021 is the year that Colin Galen reached LGM. <:orz:753647752365342860>"
+        elif yr==2022:
+          quote = "2022 is the year that Colin Galen hit the 4000 rating threshold on Codeforces. <:orz:753647752365342860>"
+      await message.channel.send(quote)
+    except:
+      pass
   #get a kanye quote
   elif message.content == '$kanye':
     quote = get_kanye()
@@ -157,33 +187,14 @@ async def on_message(message):
   elif message.content == '$starwars':
     quote = get_starwars()
     await message.channel.send(quote)
-  #the 8ball will answer your query
-  elif message.content == '$8ball':
-    response = ball()
-    await message.channel.send(message.author.mention + " " + response)
-  #send a link to the github
-  elif message.content == '$github':
-    await message.channel.send("https://github.com/Agnimandur/Red-Crab-Inn-Bot")
   #number of servers the bot is in
   elif message.content == '$servers':
     totalPeople = sum([(1 if not x.bot else 0) for x in client.users])
     await message.channel.send("The Red Crab Inn is currently in {s} servers, serving {p} people across Discord!".format(s=len(client.guilds),p=str(totalPeople)))
   #send the help box in markdown
-  elif message.content.lower() == '$help':
-    embed = make_embed(title="Miscellaneous Commands",description="These are commands for initializing the Reaper game, and for other random things. All these commands have a **$** prefix. For in game commands, go to the #reaper channel.").add_field(name="**Reaper Related**",value="""
-- $reaper. Initialize the Reaper channels and roles in your server.
-- $leave. Remove the Red Crab Inn bot and all associated roles and channels from your server. All history **will be lost**!""").add_field(name="**Random Commands**",value="""
-- $quote. Get an inspirational quote!
-- $trump. Get a Donald Trump quote.
-- $kanye. Get a Kanye West quote.
-- $ron. Get a Ron Swanson (Parks and Recreation character) quote.
-- $starwars. Get a quote from a random Star Wars character!
-- $8ball. Ask the 8Ball something!
-- $github. Get a link to this bot's public github repository.
-- $servers. Find out how many servers the Red Crab Inn is in!""")
+  elif message.content.lower().startswith('$help'):
+    embed = main_help(message.content.lower())
     await message.channel.send(embed=embed)
-
-
 
 #My Discord Bot Token
 keep_alive() #it will always be online

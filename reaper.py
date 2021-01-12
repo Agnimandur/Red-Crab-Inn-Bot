@@ -215,7 +215,7 @@ async def reaper(message):
   if (text.startswith('begin game') or text.startswith('begin blitz game')) and game not in db.keys() and channel=='reaper':
     if not admin:
       return "Hi {author}, you need to be a reaper-admin to begin a game.".format(author=message.author.mention),False
-    blitz = True if text.find('blitz') >= 0 else False
+    blitz = True if 'blitz' in text else False
     cooldown = H
     towin = P
     random = 1

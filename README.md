@@ -17,11 +17,11 @@ Receive a Kanye West quote.
 #### $ron
 Receive a Ron Swanson (Parks and Recreation character) quote.
 
-#### $8ball
-The Magic 8 Ball will answer your query.
+#### $what happened in [yr]?
+Find out what happened in the given [yr]. Put in a negative number for a BC year.
 
-#### $github
-Get a link to this github repository.
+#### $mathtrivia
+Get some math trivia about a natural number.
 
 #### $servers
 Find the number of servers and people that this bot has reached.
