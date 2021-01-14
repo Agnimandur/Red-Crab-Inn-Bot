@@ -5,6 +5,7 @@ import json
 import random
 from replit import db
 from keep_alive import keep_alive
+from threading import Timer
 from reaper import reaper
 from reaper import cache
 from help import main_help
@@ -13,6 +14,7 @@ from help import main_help
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents,activity=discord.Game(name="Reaper"))
+delay = set()
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -43,7 +45,7 @@ def get_ron():
   response = requests.get("http://ron-swanson-quotes.herokuapp.com/v2/quotes")
   json_data = json.loads(response.text)
   quote = '"'+json_data[0]+'"'
-  return quot
+  return quote
 
 def get_starwars():
   response = requests.get("http://swquotesapi.digitaljedi.dk/api/SWQuote/RandomStarWarsQuote")
@@ -68,8 +70,13 @@ def get_math_trivia():
 async def on_ready():
   print("Successful login as {name}".format(name=str(client.user)))
 
+def talkAgain(author):
+  delay.remove(author)
+
 @client.event
 async def on_message(message):
+  if message.author in delay:
+    return
   #determine the server this message was sent in
   try:
     game = "REAPER GAME "+str(message.guild.id)
@@ -84,6 +91,9 @@ async def on_message(message):
 
     #get the bot's response and send it.
     if len(response) > 0:
+      delay.add(message.author)
+      t = Timer(2.0,talkAgain,[message.author])
+      t.start()
       botMessage = await message.channel.send(response)
       #begin the game
       if beginGame==True:
@@ -94,6 +104,7 @@ async def on_message(message):
           print(message.guild.name + " doesn't have pin privileges")
     return
   #initialize the reaper channel
+  skip = False
   if message.content == '$reaper':
     reaperID = 0
     for c in message.guild.channels:
@@ -204,6 +215,13 @@ async def on_message(message):
   elif message.content.lower().startswith('$help'):
     embed = main_help(message.content.lower())
     await message.channel.send(embed=embed)
+  else:
+    skip = True
+  
+  if not skip:
+    delay.add(message.author)
+    t = Timer(2.0,talkAgain,[message.author])
+    t.start()
 
 #My Discord Bot Token
 keep_alive() #it will always be online
