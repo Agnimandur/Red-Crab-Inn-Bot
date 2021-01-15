@@ -94,6 +94,8 @@ async def on_message(message):
       delay.add(message.author)
       t = Timer(3,talkAgain,[message.author])
       t.start()
+      if message.content=='leaderboard':
+        return
       botMessage = await message.channel.send(response)
       #begin the game
       if beginGame==True:
