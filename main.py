@@ -90,9 +90,9 @@ async def on_message(message):
     response,beginGame = await reaper(message)
 
     #get the bot's response and send it.
-    if len(response) > 0:
+    if len(response) > 0 or message.content=='leaderboard':
       delay.add(message.author)
-      t = Timer(2.0,talkAgain,[message.author])
+      t = Timer(3,talkAgain,[message.author])
       t.start()
       botMessage = await message.channel.send(response)
       #begin the game
@@ -220,7 +220,7 @@ async def on_message(message):
   
   if not skip:
     delay.add(message.author)
-    t = Timer(2.0,talkAgain,[message.author])
+    t = Timer(3,talkAgain,[message.author])
     t.start()
 
 #My Discord Bot Token
