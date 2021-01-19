@@ -41,7 +41,6 @@ def main_generic():
 - $trump
 - $kanye
 - $ron
-- $starwars
 - $what happened in [yr]
 - $mathtrivia
 - $servers```""")
@@ -56,13 +55,12 @@ def main_help(text):
       embed=make_embed(title="**Reaper**",description="Initialize the Reaper channels and roles in your server.")
     elif 'leave' in command:
       embed=make_embed(title="**Leave**",description="Remove the Red Crab Inn bot and all associated roles and channels from your server. All history **will be lost**!")
-    elif 'quote' in command or 'trump' in command or 'kanye' in command or 'ron' in command or 'starwars' in command:
+    elif 'quote' in command or 'trump' in command or 'kanye' in command or 'ron' in command:
       embed=make_embed(title="**Fetch a Quote**",description="Fetch a quote from one of several sources.").add_field(name="**Commands**",value="""
 - $quote. Get an inspirational quote and its author! [API](https://zenquotes.io)
 - $trump. Get some Donald Trump nostalgia. All quotes from before he became president. [API 1](https://tronalddump.io), [API 2](https://api.whatdoestrumpthink.com)
 - $kanye. Get a Kanye West quote. [API](https://api.kanye.rest/)
-- $ron. Get a Ron Swanson (Parks and Recreation character) quote. [API](http://ron-swanson-quotes.herokuapp.com)
-- $starwars. Get a canon quote from a Star Wars character. [API](http://swquotesapi.digitaljedi.dk)""")
+- $ron. Get a Ron Swanson (Parks and Recreation character) quote. [API](http://ron-swanson-quotes.herokuapp.com)""")
     elif 'servers' in command:
       embed=make_embed(title="**Server Statistics**",description="Get the number of servers the bot is in, and the total number of humans in those servers.")
     elif 'mathtrivia' in command:

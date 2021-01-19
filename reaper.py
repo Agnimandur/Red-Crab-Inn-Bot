@@ -57,19 +57,10 @@ def leaderboardEmbed(guild):
 def getmodifier(game):
   if db[game][3]==0:
     return 1
-  d1000 = randint(1,1000)
-  if d1000 <= 100:
-    return 2
-  elif d1000 <= 150:
-    return 3
-  elif d1000 <= 180:
-    return 4
-  elif d1000 <= 199:
-    return 5
-  elif d1000 <= 200:
-    return 8
-  else:
-    return 1
+  mod = 1
+  while randint(1,2)==1:
+    mod += 1
+  return mod
 
 #is this a free reap?
 def getfree(game):
@@ -183,11 +174,26 @@ def role_cache(guild):
     cache[guild.id] = (admin,banned)
   return cache[guild.id]
 
+async def friend(message):
+  friend = None
+  for r in message.guild.roles:
+    if r.name == 'Friend of the Red Crab Inn':
+      friend = r
+      break
+  if friend == None:
+    friend = await message.guild.create_role(name="Friend of the Red Crab Inn",colour=discord.Colour.dark_red(),mentionable=True)
+  await friend.edit(position=1)
+  for member in message.mentions:
+    await member.add_roles(friend)
+    await message.channel.send("Thank you {m} for being a Friend of the Red Crab Inn!".format(m=str(member)))
 
 #keys are server id + " " + user id
 #values are (time,score) tuples
 #gamekey is "REAPER GAME "+server and gamevalue is (current time, time between reaps, points to win, begin-game-message-id)
 async def reaper(message):
+  if message.author.id==AGNIMANDUR and message.content.startswith('Thank you'):
+    await friend(message)
+    return "",False
   #senders info
   response=""
   yourID = str(message.author.id)
@@ -276,7 +282,7 @@ async def reaper(message):
     except:
       response = "There was a failure in demotion 🙁."
   #promote to reaper-admin
-  elif text.startswith('adminify') and (admin or message.author.guild_permissions.administrator) and len(message.mentions)>0:
+  elif text.startswith('adminify') and (admin or message.author.guild_permissions.administrator or message.author.id==AGNIMANDUR) and len(message.mentions)>0:
     try:
       for member in message.mentions:
         await member.add_roles(roles[0])
@@ -367,6 +373,9 @@ async def reaper(message):
       if hisInfo in db.keys():
         db[hisInfo] = (0,0)
     response = "Reset successfully completed!"
+  elif text=='reset timer' and admin:
+    db[game] = (currentTime,db[game][1],db[game][2],db[game][3],db[game][4])
+    response = "Reap timer successfully reset!"
   #find your next reap time
   elif text == 'nextreap':
     nextReap = canreap(currentTime,yourID,message.guild)

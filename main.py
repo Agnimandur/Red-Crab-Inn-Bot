@@ -47,12 +47,6 @@ def get_ron():
   quote = '"'+json_data[0]+'"'
   return quote
 
-def get_starwars():
-  response = requests.get("http://swquotesapi.digitaljedi.dk/api/SWQuote/RandomStarWarsQuote")
-  json_data = json.loads(response.text)
-  quote = json_data['starWarsQuote']
-  return quote
-
 def get_year(yr):
   response = requests.get("http://numbersapi.com/{yr}/year?json".format(yr=yr))
   json_data = json.loads(response.text)
@@ -204,10 +198,6 @@ async def on_message(message):
   #get a ron swanson (parks and recreation character) quote
   elif message.content == '$ron':
     quote = get_ron()
-    await message.channel.send(quote)
-  #get a canon star wars quote
-  elif message.content == '$starwars':
-    quote = get_starwars()
     await message.channel.send(quote)
   #number of servers the bot is in
   elif message.content == '$servers':
