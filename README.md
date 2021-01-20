@@ -59,7 +59,7 @@ An admin forcibly ends the ongoing game.
 An admin can type "reset" along with @ing a list of [users] to manually reset all their scores to 0.
 
 #### adminify [users]
-An admin can make the @ed users reaper-admins!
+An admin can make the @ed users admins!
 
 #### demote [users]
 A **server administrator** can use this command to take away the reaper-admin role from the @ed users.
@@ -88,4 +88,26 @@ Find the current top10 leaderboard in an ongoing game, displayed as a fancy Embe
 Find the time remaining before you can reap again. If the optional [name] parameter is provided, it finds the time before the next reap of person [name].
 
 #### rank=[name]
-Find out your current point total, and your current rank in the game! If the optional [name] parameter is provided, it finds the score of person [name].
+Find out your current point total, and your current rank in the game! If the optional [name] parameter is provided, it finds the score of all the people whose name begins with [name]. [name] must be at least 4 characters long.
+
+<br />
+
+## Bitcoin Simulator Commands
+
+#### join
+Join the ongoing bitcoin simulation with a million dollars.
+
+#### exchange rate
+Find the current exchange rate of bitcoins to US dollars. This is updated every 5 minutes.
+
+#### leaderboard
+Find the current top10 leaderboard of the server's top bitcoin whales!
+
+#### buy/sell [usd] [btc]
+If possible, buy or sell the amount specified by the parameter tags. For example, *buy usd=50* would buy 50 dollars worth of bitcoin, and *sell btc=50* would sell 50 bitcoins.
+
+#### buy/sell all
+*buy all* and *sell all* respectively buys as much Bitcoin as possible and liquidates as much bitcoin as possible into cash.
+
+#### rank=[name]
+Find out your current net worth, and rank in the ongoing Bitcoin simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.

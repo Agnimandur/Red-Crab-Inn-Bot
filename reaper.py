@@ -5,8 +5,10 @@ import time
 from datetime import timedelta
 from graph import graph
 from help import reaper_help
-from help import make_embed
 from random import randint
+
+from leaderboard import leaderboard
+from leaderboard import leaderboardEmbed
 
 #default parameters
 H = 12 #12 hours between reaps
@@ -19,39 +21,6 @@ cache = {} #guild id to a tuple of (reaper-admin role, banned-from-reaper role)
 #send the reaper logo
 async def sendLogo(channel):
   await channel.send(file=discord.File("reaper.png"))
-
-#build the leaderboard
-def leaderboard(guild):
-  temp = []
-  server = str(guild.id)
-  for key in db.keys():
-    if key.startswith(server):
-      #[score,user id]
-      userID = int(key[len(server)+1:])
-      temp.append([db[key][1],userID])
-  temp.sort(reverse=True)
-  return temp
-def leaderboardEmbed(guild):
-  rankList = leaderboard(guild)
-  if len(rankList)==0:
-    return None
-  ranks = ""
-  names = ""
-  points = ""
-  i = 0
-  for person in rankList:
-    if i==min(len(rankList),10):
-      break
-    #skip people who aren't in the server anymore
-    member = guild.get_member(person[1])
-    if member==None:
-      continue
-    ranks += "`{pos}.`\n".format(pos=i+1)
-    names += "`{name}`\n".format(name=member.nick if member.nick != None else member.name)
-    points += "`{points}`\n".format(points=person[0])
-    i += 1
-  embed = make_embed(title="**Leaderboard**",description="Top 10 reaper leaderboard. The target to win is **{p}** points.".format(p=db["REAPER GAME "+str(guild.id)][2])).add_field(name="**Rank**",value=ranks,inline=True).add_field(name="**Players**",value=names,inline=True).add_field(name="**Points**",value=points,inline=True)
-  return embed
 
 #determine the modifier to the score (odds provided by kevinmathz)
 def getmodifier(game):
@@ -91,8 +60,8 @@ async def endgame(message):
   game = "REAPER GAME "+server
   blitz = True if "BLITZ "+game in db.keys() else False
 
-  rankList = leaderboard(message.guild)
-  embed = leaderboardEmbed(message.guild)
+  rankList = leaderboard(server,'reaper')
+  embed = leaderboardEmbed(message.guild,server,'reaper')
   champion = AGNIMANDUR
   if len(rankList)>0:
     champion = rankList[0][1]
@@ -440,18 +409,18 @@ async def reaper(message):
     response = "The current reap time is {points} seconds.".format(points=points)
   #print out a top10 current leaderboard
   elif text=='leaderboard':
-    rankList = leaderboard(message.guild)
-    embed = leaderboardEmbed(message.guild)
+    embed = leaderboardEmbed(message.guild,server,'reaper')
     try:
       await message.channel.send(embed=embed)
     except:
       await message.channel.send("The leaderboard is empty!")
+    response = 200
   #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():
       response = "Hi <@{author}>, make a reap to join the game!".format(author=yourID)
     else:
-      rankList = [x[1] for x in leaderboard(message.guild)]
+      rankList = [x[1] for x in leaderboard(server,'reaper')]
       rank = rankList.index(int(yourID))+1
       response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
   #find the scores of other people

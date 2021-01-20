@@ -9,8 +9,10 @@ from threading import Timer
 from reaper import reaper
 from reaper import cache
 from help import main_help
+from bitcoin import bitcoin
 
 #set up the bot
+AGNIMANDUR = 482581806143766529
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents,activity=discord.Game(name="Reaper"))
@@ -62,6 +64,7 @@ def get_math_trivia():
 #the bot is online now!
 @client.event
 async def on_ready():
+  db['BITCOIN'] = 0
   print("Successful login as {name}".format(name=str(client.user)))
 
 def talkAgain(author):
@@ -69,6 +72,8 @@ def talkAgain(author):
 
 @client.event
 async def on_message(message):
+  if message.author.bot:
+    return
   if message.author in delay:
     return
   #determine the server this message was sent in
@@ -77,18 +82,25 @@ async def on_message(message):
   except:
     print(message)
     return
-  if message.author.bot:
-    return
+  
+  if message.channel.name == 'reaper-bitcoin':
+    response = await bitcoin(message)
+    if response == 200 or len(response) > 0:
+      if response == 200:
+        return
+      await message.channel.send(response)
+      return
+
   if message.channel.name == 'reaper' or message.channel.name == 'reaper-discussion':
     #if this message is a reaper command, let reaper.py handle it.
     response,beginGame = await reaper(message)
 
     #get the bot's response and send it.
-    if len(response) > 0 or message.content=='leaderboard':
+    if response == 200 or len(response) > 0:
       delay.add(message.author)
       t = Timer(3,talkAgain,[message.author])
       t.start()
-      if message.content=='leaderboard':
+      if response == 200:
         return
       botMessage = await message.channel.send(response)
       #begin the game
@@ -122,6 +134,7 @@ async def on_message(message):
         await re.set_permissions(banned,read_messages=True,send_messages=False)
         rd = await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.",category=category)
         await rd.set_permissions(banned,read_messages=True,send_messages=False)
+        rbc = await message.guild.create_text_channel(name='reaper-bitcoin',topic="Buy and sell bitcoin in this channel!",slowmode_delay=2,category=category)
         for m in message.guild.members:
           if not m.bot and m.guild_permissions.administrator:
             await m.add_roles(reaperadmin)

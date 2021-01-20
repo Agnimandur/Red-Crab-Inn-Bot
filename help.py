@@ -2,10 +2,10 @@ import discord
 from replit import db
 
 def make_embed(title,description):
+  #color is dark purple
   return discord.Embed(color=0x71368a,title=title,description=description+"\n[Invite Me](https://discord.com/api/oauth2/authorize?client_id=791162942459478016&permissions=2080894065&scope=bot) | [Join the Discord](https://discord.gg/5bbnUz6J2a) | [Github](https://github.com/Agnimandur/Red-Crab-Inn-Bot) | [Vote on Top.gg](https://top.gg/bot/791162942459478016/vote)").set_author(name='Reaper',url='https://github.com/Agnimandur/Red-Crab-Inn-Bot',icon_url='https://i.ibb.co/tPJM6DP/reaper-logo.png').set_footer(text="Made by Agnimandur#0053",icon_url="https://i.ibb.co/fd2L46j/iron-throne-christmas.jpg")
 
-def generic():
-  #color is dark purple
+def reaper_generic():
   return make_embed(title="**Game Commands**",description="Get information about a specific command with help [COMMAND_NAME]. The first row are reaper-admin only commands.").add_field(name="**Begin/End the game**",value = """
   ```
 - begin game [h] [p] [rng]
@@ -30,6 +30,19 @@ def generic():
 - rank=[name]
 - leaderboard```
   """)
+
+def bitcoin_generic():
+  return make_embed(title="**Bitcoin Simulator Commands**",description="Get information about a specific command with help [COMMAND_NAME].").add_field(name="**Make a transaction**",value = """
+  ```
+- buy [usd] [btc]
+- buy all
+- sell [usd] [btc]
+- sell all```""").add_field(name="**Simulation**",value = """
+  ```
+- join
+- exchange rate
+- leaderboard
+- rank=[name]```""")
 
 def main_generic():
   return make_embed(title="Miscellaneous Commands",description="These are commands for setting up the Reaper game, and for other miscellaneous things. All these commands have a **$** prefix. Get information about a specific command with $help [COMMAND_NAME]. For reaper game commands, go to the #reaper channel.").add_field(name="**Reaper Related**",value="""
@@ -73,7 +86,7 @@ def main_help(text):
   return embed
 
 def reaper_help(text):
-  embed = generic()
+  embed = reaper_generic()
   if len(text)==4:
     return embed
   try:
@@ -114,7 +127,7 @@ def reaper_help(text):
 - [name]. Optional. The person whose next reap time you want to find. Defaults to yourself.""")
     elif command.startswith('rank'):
       embed=make_embed(title="**Rank**",description="Find your current rank and score in the game. Alternatively, you can find the score of someone else.").add_field(name="**Parameters**",value="""
-- [name]. Optional. The person whose score you want to find. Defaults to yourself.""")
+- [name]. Optional. The person whose score you want to find (must be at least 4 characters long). Defaults to yourself.""")
     elif command=='leaderboard':
       embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 of the ongoing game in a leaderboard format.").add_field(name="**Parameters**",value="*None*")
     elif command.startswith('h'):
@@ -129,6 +142,39 @@ def reaper_help(text):
     elif command.startswith('rng'):
       embed=make_embed(title="**Randomness**",description="Toggle randomness in the game. This will affect reap multipliers and free reaps, but not retroactively.").add_field(name="**Parameters**",value="""
 - [rng]. Either 0 or 1, corresponding to whether randomness is off or on.""")
+  except:
+    pass
+  return embed
+
+def bitcoin_help(text):
+  embed = bitcoin_generic()
+  if len(text)==4:
+    return embed
+  try:
+    command = text[5:]
+    if command.startswith('buy'):
+      embed=make_embed(title="**Buy Bitcoin**",description="Buy some amount of bitcoin at current exchange rates. The bot will inform you if you don't have enough money. If no parameter tag is provided, the bot assumes you are buying in US dollars.").add_field(name="**Parameters**",value="""
+- [usd]. The amount of US dollars to spend.
+- [btc]. The amount of bitcoin to buy.""").add_field(name="**Buy All**",value="Exchange all your money into Bitcoin.").add_field(name="**Examples**",value="""
+- buy usd=5000. This would buy $5000 worth of bitcoin.
+- buy btc=5. This would buy ฿5.
+- buy 100000. This would buy $100000 worth of bitcoin.""")
+    elif command.startswith('sell'):
+      embed=make_embed(title="**Sell Bitcoin**",description="Sell some amount of bitcoin at current exchange rates. The bot will inform you if you don't have enough bitcoin to sell. If no parameter tag is provided, the bot assumes you are selling in US dollars.").add_field(name="**Parameters**",value="""
+- [usd]. The amount of US dollars worth of bitcoin to sell.
+- [btc]. The amount of bitcoin to sell.""").add_field(name="**Sell All**",value="Exchange all your bitcoin into dollars.").add_field(name="**Examples**",value="""
+- sell usd=5000. This would sell $5000 worth of bitcoin.
+- sell btc=5. This would sell ฿5.
+- sell 100000. This would sell $100000 worth of bitcoin.""")
+    elif command=='leaderboard':
+      embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 richest investors in the ongoing Bitcoin simulation.").add_field(name="**Parameters**",value="*None*")
+    elif command=='join':
+      embed=make_embed(title="**Join**",description="Join the bitcoin simulation. You start with a million dollars.").add_field(name="**Parameters**",value="*None*")
+    elif command.find('rate') >= 0:
+      embed=make_embed(title="**Exchange Rate**",description="Find the current bitcoin exchange rate. This is updated every 5 minutes.").add_field(name="**Parameters**",value="*None*")
+    elif command.startswith('rank'):
+      embed=make_embed(title="**Rank**",description="Find your current net worth and rank in the simulation. Alternatively, you can find the net worth of someone else.").add_field(name="**Parameters**",value="""
+- [name]. Optional. The person whose net worth you want to find (must be at least 4 characters long). Defaults to yourself.""")
   except:
     pass
   return embed
