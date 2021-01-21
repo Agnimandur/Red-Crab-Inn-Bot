@@ -49,7 +49,7 @@ async def crypto(message):
           success=False
       elif p.startswith('eth='):
         try:
-          if p=='eth-all':
+          if p=='eth=all':
             eth = db[key][0]/r[1]
           elif p.startswith('eth=$'):
             eth = float(p[5:])/r[1]
@@ -89,7 +89,7 @@ async def crypto(message):
           success = False
       elif p.startswith('eth='):
         try:
-          if p=='eth-all':
+          if p=='eth=all':
             eth = db[key][2]
           elif p.startswith('eth=$'):
             eth = float(p[5:])/r[1]
