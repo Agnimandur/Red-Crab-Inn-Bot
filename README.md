@@ -92,22 +92,19 @@ Find out your current point total, and your current rank in the game! If the opt
 
 <br />
 
-## Bitcoin Simulator Commands
+## Cryptocurrency Simulator Commands
 
 #### join
-Join the ongoing bitcoin simulation with a million dollars.
+Join the ongoing cryptocurrency simulation with a million dollars.
 
 #### exchange rate
-Find the current exchange rate of bitcoins to US dollars. This is updated every 5 minutes.
+Find the current exchange rate of bitcoins and ethereums to US dollars. The rate is updated every minute!
 
 #### leaderboard
-Find the current top10 leaderboard of the server's top bitcoin whales!
+Find the current top10 leaderboard of the server's most successful whales!
 
-#### buy/sell [usd] [btc]
-If possible, buy or sell the amount specified by the parameter tags. For example, *buy usd=50* would buy 50 dollars worth of bitcoin, and *sell btc=50* would sell 50 bitcoins.
-
-#### buy/sell all
-*buy all* and *sell all* respectively buys as much Bitcoin as possible and liquidates as much bitcoin as possible into cash.
+#### buy/sell [btc] [eth]
+If possible, buy or sell the amount specified by the parameter tags. if [all] is passed in, it buys or sells as much as possible of the specified cryptocurrency. For example, *sell btc=2 eth=all* would sell 2 of your bitcoins and all of your ethereum.
 
 #### rank=[name]
-Find out your current net worth, and rank in the ongoing Bitcoin simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.
+Find out your current net worth, and rank in the ongoing Cryptocurrency simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.
