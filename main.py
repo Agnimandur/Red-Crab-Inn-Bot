@@ -86,6 +86,9 @@ async def on_message(message):
   
   if message.channel.name == 'reaper-crypto':
     response = await crypto(message)
+    delay.add(message.author)
+    t = Timer(3,talkAgain,[message.author])
+    t.start()
     if response == 200 or len(response) > 0:
       if response == 200:
         return

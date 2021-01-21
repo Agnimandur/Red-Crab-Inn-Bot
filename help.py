@@ -151,19 +151,21 @@ def crypto_help(text):
   try:
     command = text[5:]
     if command.startswith('buy'):
-      embed=make_embed(title="**Buy Cryptocurrency**",description="Buy some amount of cryptocurrency at current exchange rates. The bot will inform you if you don't have enough money. You can use the all keyword to buy as much of one cryptocurrency as possible").add_field(name="**Parameters**",value="""
+      embed=make_embed(title="**Buy Cryptocurrency**",description="Buy some amount of cryptocurrency at current exchange rates. The bot will inform you if you don't have enough money. You can use the all keyword to buy as much of one cryptocurrency as possible. Including a dollar sign at the beginning of an input will make the bot automatically convert the US dollar amount into the cryptocurrency in question.").add_field(name="**Parameters**",value="""
 - [btc]. The amount of Bitcoin to buy.
 - [eth]. The amount of Ethereum to buy.""").add_field(name="**Examples**",value="""
 - buy btc=0.1. This would buy ฿0.1.
 - buy btc=1 eth=1. This would buy ฿1 and Ξ1.
-- buy btc=all. This would buy as much bitcoin as possible.""")
+- buy btc=all. This would buy as much bitcoin as possible.
+- buy btc=$35000. This would buy $35000 worth of bitcoin.""")
     elif command.startswith('sell'):
-      embed=make_embed(title="**Sell Cryptocurrency**",description="Sell some amount of cryptocurrency at current exchange rates. The bot will inform you if you don't have enough of a given currency. You can use the all keyword to sell all of a given cryptocurrency.").add_field(name="**Parameters**",value="""
+      embed=make_embed(title="**Sell Cryptocurrency**",description="Sell some amount of cryptocurrency at current exchange rates. The bot will inform you if you don't have enough of a given currency. You can use the all keyword to sell all of a given cryptocurrency. Including a dollar sign at the beginning of an input will make the bot automatically convert the US dollar amount into the cryptocurrency in question.").add_field(name="**Parameters**",value="""
 - [btc]. The amount of Bitcoin to sell.
 - [eth]. The amount of Ethereum to sell.""").add_field(name="**Examples**",value="""
 - sell btc=0.1. This would sell ฿0.1.
 - sell btc=1 eth=1. This would sell ฿1 and Ξ1.
-- sell btc=all eth=5. This would sell all your bitcoin and Ξ5.""")
+- sell btc=all eth=5. This would sell all your bitcoin and Ξ5.
+- sell btc=$35000. This would sell $35000 worth of bitcoin.""")
     elif command=='leaderboard':
       embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 richest investors in the ongoing Bitcoin simulation.").add_field(name="**Parameters**",value="*None*")
     elif command=='join':

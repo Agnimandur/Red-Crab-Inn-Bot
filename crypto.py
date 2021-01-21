@@ -41,6 +41,8 @@ async def crypto(message):
         try:
           if p=='btc=all':
             btc = db[key][0]/r[0]
+          elif p.startswith('btc=$'):
+            btc = float(p[5:])/r[0]
           else:
             btc = float(p[4:])
         except:
@@ -49,6 +51,8 @@ async def crypto(message):
         try:
           if p=='eth-all':
             eth = db[key][0]/r[1]
+          elif p.startswith('eth=$'):
+            eth = float(p[5:])/r[1]
           else:
             eth = float(p[4:])
         except:
@@ -77,6 +81,8 @@ async def crypto(message):
         try:
           if p=='btc=all':
             btc = db[key][1]
+          elif p.startswith('btc=$'):
+            btc = float(p[5:])/r[0]
           else:
             btc = float(p[4:])
         except:
@@ -85,6 +91,8 @@ async def crypto(message):
         try:
           if p=='eth-all':
             eth = db[key][2]
+          elif p.startswith('eth=$'):
+            eth = float(p[5:])/r[1]
           else:
             eth = float(p[4:])
         except:

@@ -104,7 +104,7 @@ Find the current exchange rate of bitcoins and ethereums to US dollars. The rate
 Find the current top10 leaderboard of the server's most successful whales!
 
 #### buy/sell [btc] [eth]
-If possible, buy or sell the amount specified by the parameter tags. if [all] is passed in, it buys or sells as much as possible of the specified cryptocurrency. For example, *sell btc=2 eth=all* would sell 2 of your bitcoins and all of your ethereum.
+If possible, buy or sell the amount specified by the parameter tags. if [all] is passed in, it buys or sells as much as possible of the specified cryptocurrency. For example, *sell btc=2 eth=all* would sell 2 of your bitcoins and all of your ethereum. if a dollar sign is included, the bot automatically converts the dollar amount to the cryptocurrency in question. For example, *buy btc=$10000* would buy $10000 US dollars worth of bitcoin.
 
 #### rank=[name]
 Find out your current net worth, and rank in the ongoing Cryptocurrency simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.
