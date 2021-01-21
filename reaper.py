@@ -197,43 +197,44 @@ async def reaper(message):
     if blitz:
       cooldown = BS
       towin = BP
-    hi = text.find('h=')
-    si = text.find('s=')
-    pi = text.find('p=')
-    rngi = text.find('rng=')
 
-    try:
-      hours = float(text[hi+2:find(text,hi)])
-      if not blitz:
-        cooldown = min(max(hours,0.003),1000)
-    except:
-      pass
-
-    try:
-      seconds = int(text[si+2:find(text,si)])
-      if blitz:
-        cooldown = min(max(seconds,5),500)
-    except:
-      pass
-    
-    try:
-      points = int(text[pi+2:find(text,pi)])
-      towin = max(points,10)
-      if blitz:
-        towin = min(points,5000)
+    params = text[text.find('game')+5:].split(' ')
+    success = True
+    for p in params:
+      if p.startswith('h=') and not blitz:
+        try:
+          hours = float(p[2:])
+          if 0.003 <= hours and hours <= 1000:
+            cooldown = hours
+        except:
+          success=False
+      elif p.startswith('s=') and blitz:
+        try:
+          seconds = int(p[2:])
+          if 5 <= seconds and seconds <= 500:
+            cooldown = seconds
+        except:
+          success=False
+      elif p.startswith('p='):
+        try:
+          points = int(p[2:])
+          maxpoints = 5000 if blitz else 10000000
+          if 10 <= points and points <= maxpoints:
+            towin = points
+        except:
+          success=False
+      elif p.startswith('rng='):
+        try:
+          toggle = int(p[4:])
+          if 0 <= toggle and toggle <= 1:
+            random = toggle
+        except:
+          success = False
       else:
-        towin = min(points,10000000)
-    except:
-      pass
-    
-    try:
-      random = int(text[rngi+4:find(text,rngi)])
-      if 0 <= random <= 1:
-        pass
-      else:
-        error=1//0
-    except:
-      pass
+        success = False
+    if not success:
+      bg = "begin blitz game" if blitz else "begin game"
+      return "Invalid use of the `{bg}` command".format(bg=bg),False
 
     if blitz:
       cooldown = cooldown/3600

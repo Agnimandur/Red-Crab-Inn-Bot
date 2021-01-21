@@ -9,7 +9,7 @@ from threading import Timer
 from reaper import reaper
 from reaper import cache
 from help import main_help
-from bitcoin import bitcoin
+from crypto import crypto
 
 #set up the bot
 AGNIMANDUR = 482581806143766529
@@ -65,6 +65,7 @@ def get_math_trivia():
 @client.event
 async def on_ready():
   db['BITCOIN'] = 0
+  db['ETHEREUM'] = 0
   print("Successful login as {name}".format(name=str(client.user)))
 
 def talkAgain(author):
@@ -83,8 +84,8 @@ async def on_message(message):
     print(message)
     return
   
-  if message.channel.name == 'reaper-bitcoin':
-    response = await bitcoin(message)
+  if message.channel.name == 'reaper-crypto':
+    response = await crypto(message)
     if response == 200 or len(response) > 0:
       if response == 200:
         return

@@ -31,13 +31,11 @@ def reaper_generic():
 - leaderboard```
   """)
 
-def bitcoin_generic():
-  return make_embed(title="**Bitcoin Simulator Commands**",description="Get information about a specific command with help [COMMAND_NAME].").add_field(name="**Make a transaction**",value = """
+def crypto_generic():
+  return make_embed(title="**Cryptocurrency Simulator Commands**",description="Buy and sell bitcoin and ethereum at current market rates! Get information about a specific command with help [COMMAND_NAME].").add_field(name="**Make a transaction**",value = """
   ```
-- buy [usd] [btc]
-- buy all
-- sell [usd] [btc]
-- sell all```""").add_field(name="**Simulation**",value = """
+- buy [btc] [eth]
+- sell [btc] [eth]```""").add_field(name="**Simulation**",value = """
   ```
 - join
 - exchange rate
@@ -146,32 +144,32 @@ def reaper_help(text):
     pass
   return embed
 
-def bitcoin_help(text):
-  embed = bitcoin_generic()
+def crypto_help(text):
+  embed = crypto_generic()
   if len(text)==4:
     return embed
   try:
     command = text[5:]
     if command.startswith('buy'):
-      embed=make_embed(title="**Buy Bitcoin**",description="Buy some amount of bitcoin at current exchange rates. The bot will inform you if you don't have enough money. If no parameter tag is provided, the bot assumes you are buying in US dollars.").add_field(name="**Parameters**",value="""
-- [usd]. The amount of US dollars to spend.
-- [btc]. The amount of bitcoin to buy.""").add_field(name="**Buy All**",value="Exchange all your money into Bitcoin.").add_field(name="**Examples**",value="""
-- buy usd=5000. This would buy $5000 worth of bitcoin.
-- buy btc=5. This would buy ฿5.
-- buy 100000. This would buy $100000 worth of bitcoin.""")
+      embed=make_embed(title="**Buy Cryptocurrency**",description="Buy some amount of cryptocurrency at current exchange rates. The bot will inform you if you don't have enough money. You can use the all keyword to buy as much of one cryptocurrency as possible").add_field(name="**Parameters**",value="""
+- [btc]. The amount of Bitcoin to buy.
+- [eth]. The amount of Ethereum to buy.""").add_field(name="**Examples**",value="""
+- buy btc=0.1. This would buy ฿0.1.
+- buy btc=1 eth=1. This would buy ฿1 and Ξ1.
+- buy btc=all. This would buy as much bitcoin as possible.""")
     elif command.startswith('sell'):
-      embed=make_embed(title="**Sell Bitcoin**",description="Sell some amount of bitcoin at current exchange rates. The bot will inform you if you don't have enough bitcoin to sell. If no parameter tag is provided, the bot assumes you are selling in US dollars.").add_field(name="**Parameters**",value="""
-- [usd]. The amount of US dollars worth of bitcoin to sell.
-- [btc]. The amount of bitcoin to sell.""").add_field(name="**Sell All**",value="Exchange all your bitcoin into dollars.").add_field(name="**Examples**",value="""
-- sell usd=5000. This would sell $5000 worth of bitcoin.
-- sell btc=5. This would sell ฿5.
-- sell 100000. This would sell $100000 worth of bitcoin.""")
+      embed=make_embed(title="**Sell Cryptocurrency**",description="Sell some amount of cryptocurrency at current exchange rates. The bot will inform you if you don't have enough of a given currency. You can use the all keyword to sell all of a given cryptocurrency.").add_field(name="**Parameters**",value="""
+- [btc]. The amount of Bitcoin to sell.
+- [eth]. The amount of Ethereum to sell.""").add_field(name="**Examples**",value="""
+- sell btc=0.1. This would sell ฿0.1.
+- sell btc=1 eth=1. This would sell ฿1 and Ξ1.
+- sell btc=all eth=5. This would sell all your bitcoin and Ξ5.""")
     elif command=='leaderboard':
       embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 richest investors in the ongoing Bitcoin simulation.").add_field(name="**Parameters**",value="*None*")
     elif command=='join':
       embed=make_embed(title="**Join**",description="Join the bitcoin simulation. You start with a million dollars.").add_field(name="**Parameters**",value="*None*")
     elif command.find('rate') >= 0:
-      embed=make_embed(title="**Exchange Rate**",description="Find the current bitcoin exchange rate. This is updated every 5 minutes.").add_field(name="**Parameters**",value="*None*")
+      embed=make_embed(title="**Exchange Rate**",description="Find the current bitcoin and ethereum exchange rate. This is updated every minute or so.").add_field(name="**Parameters**",value="*None*")
     elif command.startswith('rank'):
       embed=make_embed(title="**Rank**",description="Find your current net worth and rank in the simulation. Alternatively, you can find the net worth of someone else.").add_field(name="**Parameters**",value="""
 - [name]. Optional. The person whose net worth you want to find (must be at least 4 characters long). Defaults to yourself.""")
