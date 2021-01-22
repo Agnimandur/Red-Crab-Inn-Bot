@@ -24,4 +24,5 @@ def get_conversion():
 
 def networth(key):
   r = get_conversion()
-  return db[key][0]+r[0]*db[key][1]+r[1]*db[key][2]
+  usd = db[key][0]+r[0]*db[key][1]+r[1]*db[key][2]
+  return usd

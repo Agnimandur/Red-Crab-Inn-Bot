@@ -33,7 +33,7 @@ The following commands only work in the #reaper or #reaper-discussion channel.
 #### $leave
 A server admin can use this command to purge the Red Crab Inn and all its creations from your server.
 
-<br/>
+<br />
 
 ## Reaper Game Commands
 
@@ -105,6 +105,12 @@ Find the current top10 leaderboard of the server's most successful whales!
 
 #### buy/sell [btc] [eth]
 If possible, buy or sell the amount specified by the parameter tags. if [all] is passed in, it buys or sells as much as possible of the specified cryptocurrency. For example, *sell btc=2 eth=all* would sell 2 of your bitcoins and all of your ethereum. if a dollar sign is included, the bot automatically converts the dollar amount to the cryptocurrency in question. For example, *buy btc=$10000* would buy $10000 US dollars worth of bitcoin.
+
+#### short [cur]=[amt] [h]
+Place a CFD contract to short sell cryptocurrency! As above, the [all] and [$] keywords can be passed in. [cur] is either 'btc' for bitcoin or 'eth' for ethereum, and the amount is the number of them that you want to short sell. After [h] hours have elapsed (between 0.1 and 10000), you gain a profit equal to the difference in the contract opening and closing price.
+
+#### contracts
+View your ongoing contracts, and their current profit trajectories.
 
 #### rank=[name]
 Find out your current net worth, and rank in the ongoing Cryptocurrency simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.

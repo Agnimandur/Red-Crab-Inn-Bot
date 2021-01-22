@@ -35,12 +35,14 @@ def crypto_generic():
   return make_embed(title="**Cryptocurrency Simulator Commands**",description="Buy and sell bitcoin and ethereum at current market rates! Get information about a specific command with help [COMMAND_NAME].").add_field(name="**Make a transaction**",value = """
   ```
 - buy [btc] [eth]
-- sell [btc] [eth]```""").add_field(name="**Simulation**",value = """
+- sell [btc] [eth]
+- short [cur]=[amt] [h]```""").add_field(name="**Simulation**",value = """
   ```
 - join
 - exchange rate
 - leaderboard
-- rank=[name]```""")
+- rank=[name]
+- contracts```""")
 
 def main_generic():
   return make_embed(title="Miscellaneous Commands",description="These are commands for setting up the Reaper game, and for other miscellaneous things. All these commands have a **$** prefix. Get information about a specific command with $help [COMMAND_NAME]. For reaper game commands, go to the #reaper channel.").add_field(name="**Reaper Related**",value="""
@@ -175,6 +177,13 @@ def crypto_help(text):
     elif command.startswith('rank'):
       embed=make_embed(title="**Rank**",description="Find your current net worth and rank in the simulation. Alternatively, you can find the net worth of someone else.").add_field(name="**Parameters**",value="""
 - [name]. Optional. The person whose net worth you want to find (must be at least 4 characters long). Defaults to yourself.""")
+    elif command.startswith('short'):
+      embed=make_embed(title="**Short Cryptocurrency (via a CFD)**",description="This command allows you to place a Contract for Difference (a CFD). You agree to pay the difference between the cryptocurrencies price after some number of hours. If the price falls, you make a profit! Note that you lose access to the money in the CFD until the contract ends. If you go bankrupt at the end of a contract, [insert punishment here] will happen!").add_field(name="**Parameters**",value="""
+- [cur]. The cryptocurrency you want to short (either btc or eth).
+- [amt]. The amount of the cryptocurrency that you want to short.
+- [h]. The time, in hours, that the contract will last before collection occurs. The default value is 24 (1 day), although you can make it anywhere from 0.1 (6 minutes) to 10000 (over a year).""")
+    elif command=='contracts':
+      embed=make_embed(title="**Contracts**",description="Displays a list of your ongoing contracts, and the current profit of each contract. Use the `short` command to place a CFD and sell short on cryptocurrency!").add_field(name="**Parameters**",value="*None*")
   except:
     pass
   return embed

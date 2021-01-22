@@ -8,12 +8,11 @@ from help import make_embed
 def leaderboard(prefix,game):
   temp = []
   r = get_conversion()
-  for key in db.keys():
-    if key.startswith(prefix):
-      #[score,user id]
-      score = db[key][1] if game=='reaper' else networth(key)
-      userID = int(key[len(prefix)+1:])
-      temp.append([score,userID])
+  for key in db.prefix(prefix):
+    #[score,user id]
+    score = db[key][1] if game=='reaper' else networth(key)
+    userID = int(key[len(prefix)+1:])
+    temp.append([score,userID])
   temp.sort(reverse=True)
   return temp
 

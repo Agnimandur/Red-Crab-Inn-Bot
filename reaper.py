@@ -2,6 +2,7 @@
 import discord
 from replit import db
 import time
+import math
 from datetime import timedelta
 from graph import graph
 from help import reaper_help
@@ -67,9 +68,8 @@ async def endgame(message):
     champion = rankList[0][1]
 
   #clear the database of this game's keys
-  for key in db.keys():
-    if key.startswith(server):
-      del db[key]
+  for key in db.prefix(server):
+    del db[key]
   del db[game]
 
   #create a file for final results
@@ -122,13 +122,6 @@ def canreap(currentTime,yourID,guild):
     remaining = int(db[game][1]*3600000-(currentTime-db[yourInfo][0]))
     delta = timedelta(seconds=remaining//1000)
     return str(delta)
-
-def find(text,i):
-  f = text.find(' ',i)
-  if f==-1:
-    return None
-  else:
-    return f
 
 #admin role, banned role
 def role_cache(guild):
@@ -232,6 +225,8 @@ async def reaper(message):
           success = False
       else:
         success = False
+    if math.isnan(cooldown) or math.isnan(towin) or math.isnan(random):
+      success = False
     if not success:
       bg = "begin blitz game" if blitz else "begin game"
       return "Invalid use of the `{bg}` command".format(bg=bg),False
@@ -294,6 +289,8 @@ async def reaper(message):
   elif text.startswith('h=') and admin and channel=='reaper' and not blitz:
     try:
       cooldown = min(max(float(text[2:]),0.003),1000)
+      if math.isnan(cooldown):
+        raise Exception()
       db[game] = (db[game][0],cooldown,db[game][2],db[game][3],db[game][4])
       response = "Reap cooldown updated to {h} hours.".format(h=cooldown)
       beginMessage = await message.channel.fetch_message(db[game][4])
@@ -304,6 +301,8 @@ async def reaper(message):
   elif text.startswith('s=') and admin and channel=='reaper' and blitz:
     try:
       cooldown = min(max(int(text[2:]),5),500)
+      if math.isnan(cooldown):
+        raise Exception()
       db[game] = (db[game][0],cooldown/3600,db[game][2],db[game][3],db[game][4])
       response = "Reap cooldown updated to {s} seconds.".format(s=cooldown)
       beginMessage = await message.channel.fetch_message(db[game][4])
@@ -316,6 +315,8 @@ async def reaper(message):
       towin = max(10,int(text[2:]))
       if blitz:
         towin = min(towin,5000)
+      if math.isnan(towin):
+        raise Exception()
       db[game] = (db[game][0],db[game][1],towin,db[game][3],db[game][4])
       response = "Points to win updated to {p} points.".format(p=towin)
       beginMessage = await message.channel.fetch_message(db[game][4])
@@ -326,10 +327,8 @@ async def reaper(message):
   elif text.startswith('rng=') and admin and channel=='reaper':
     try:
       random = int(text[4:])
-      if 0 <= random <= 1:
-        pass
-      else:
-        error=1//0
+      if random < 0 or random > 1 or math.isnan(random):
+        raise Exception()
       db[game] = (db[game][0],db[game][1],db[game][2],random,db[game][4])
       response = "Randomness has been {status}.".format(status="ENABLED" if random==1 else "DISABLED")
       beginMessage = await message.channel.fetch_message(db[game][4])
