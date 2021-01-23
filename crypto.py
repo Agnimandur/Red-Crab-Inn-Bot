@@ -1,12 +1,14 @@
 import discord
 import math
 import time
+from datetime import timedelta
 from replit import db
 from conversion import get_conversion
 from conversion import networth
 from leaderboard import leaderboard
 from leaderboard import leaderboardEmbed
 from help import crypto_help
+from help import make_embed
 
 def transaction(params,key,kind):
   ret = {'btc':0,'eth':0,'success':True,'h':24}
@@ -67,7 +69,7 @@ async def crypto(message):
   
   if text=='exchange rate':
     r = get_conversion()
-    response = "The current Bitcoin exchange rate is ${btc}. The current Ethereum exchange rate is ${eth}.".format(btc=r[0],eth=r[1])
+    response = "The current Bitcoin exchange rate is ${btc}. The current Ethereum exchange rate is ${eth}.".format(btc=round(r[0]),eth=round(r[1]))
   elif text.startswith('buy '):
     params = text[4:].split(' ')
     r = get_conversion()
@@ -80,7 +82,7 @@ async def crypto(message):
       response = "Hi {user}, you do not have enough money to buy that much cryptocurrency!".format(user=message.author.mention)
     else:
       db[key] = (db[key][0]-cost,db[key][1]+ret['btc'],db[key][2]+ret['eth'])
-      response = "Hi {user}, your transaction was successful! You now have ${cash} and ฿{btc} and Ξ{eth}.".format(user=message.author.mention,cash=db[key][0],btc=db[key][1],eth=db[key][2])
+      response = "Hi {user}, your transaction was successful! You now have ${cash} and ฿{btc} and Ξ{eth}.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2])
   elif text.startswith('sell '):
     params = text[5:].split(' ')
     r = get_conversion()
@@ -93,7 +95,7 @@ async def crypto(message):
       response = "Hi {user}, you do not have enough cryptocurrency to make that sale!".format(user=message.author.mention)
     else:
       db[key] = (db[key][0]+profit,db[key][1]-ret['btc'],db[key][2]-ret['eth'])
-      response = "Hi {user}, your transaction was successful! You now have ${cash} and ฿{btc} and Ξ{eth}.".format(user=message.author.mention,cash=db[key][0],btc=db[key][1],eth=db[key][2])
+      response = "Hi {user}, your transaction was successful! You now have ${cash} and ฿{btc} and Ξ{eth}.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2])
   elif text.startswith('short'):
     params = text[6:].split(' ')
     success = True
@@ -131,23 +133,31 @@ async def crypto(message):
       r = get_conversion()
       temp = db[contracts]
       temp2 = []
-      response = "Hi {user}, below is a list of your ongoing contracts.\n".format(user=message.author.mention)
       currentTime = round(time.time())
       cash = db[key][0]
+      amts = ""
+      ends = ""
+      profits = ""
       for contract in temp:
         if contract[1]=='btc':
           profit = (contract[3]-r[0])*contract[2]
         else:
           profit = (contract[3]-r[1])*contract[2]
         if contract[4] <= currentTime:
-          end = "that has just ended"
+          end = "none"
           cash += (contract[2]*contract[3]+profit)
         else:
-          end = "that will end at {t}".format(t=time.ctime(contract[4]))
+          end = str(timedelta(seconds=contract[4]-currentTime))
           temp2.append(contract)
-        response += "1. A CFD for {symbol}{amt} {end} with a profit of ${profit}.\n".format(symbol='฿' if contract[1]=='btc' else 'Ξ',amt=contract[2],end=end,profit=profit)
+        amts += "`{symbol}{amt}`\n".format(symbol='฿' if contract[1]=='btc' else 'Ξ',amt=contract[2])
+        ends += "`{end}`\n".format(end=end)
+        profits += "`${profit}`\n".format(profit=round(profit))
       db[key] = (cash,db[key][1],db[key][2])
       db[contracts] = temp2
+
+      embed = make_embed(title="**{user}'s Contracts**".format(user=message.author.name),description="A list of your ongoing contracts.").add_field(name="**Amount**",value=amts,inline=True).add_field(name="**Time Until End**",value=ends[:-1],inline=True).add_field(name="**Projected Profit**",value=profits[:-1],inline=True)
+      await message.channel.send(embed=embed)
+      response = 200
   elif text=='leaderboard':
     embed = leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
     try:
@@ -155,10 +165,14 @@ async def crypto(message):
     except:
       await message.channel.send("The leaderboard is empty!")
     response = 200
+  elif text=='net worth':
+    embed = make_embed(title="**{user}'s Net Worth**".format(user=message.author.name),description="A list of your liquid assets. Use `contracts` to view your current contracts.").add_field(name="**US Dollars**",value='$'+str(round(db[key][0])),inline=True).add_field(name="**Bitcoin**",value='฿'+str(db[key][1]),inline=True).add_field(name="**Ethereum**",value='Ξ'+str(db[key][2]),inline=True)
+    await message.channel.send(embed=embed)
+    response = 200
   elif text=='rank':
     rankList = [x[1] for x in leaderboard("CRYPTO "+server,'crypto')]
     rank = rankList.index(int(message.author.id))+1
-    response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}. Your current rank in the simulation is {rank} out of {total} players.".format(user=message.author.mention,cash=db[key][0],btc=db[key][1],eth=db[key][2],net=networth(key),rank=str(rank),total=str(len(rankList)))
+    response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}. Your current rank in the simulation is {rank} out of {total} players.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2],net=round(networth(key)),rank=str(rank),total=str(len(rankList)))
   elif text.startswith('rank=') and len(text)>8:
     try:
       search = message.content[5:]
@@ -170,7 +184,7 @@ async def crypto(message):
           hisName = member.name if member.nick==None else member.nick
           #check if they're in the game or not
           try:
-            response += "{name}'s current net worth is ${net}.\n".format(name=hisName,net=networth(hisInfo))
+            response += "{name}'s current net worth is ${net}.\n".format(name=hisName,net=round(networth(hisInfo)))
           except:
             response += hisName + " has not entered the simulation yet.\n"
       else:

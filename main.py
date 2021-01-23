@@ -73,7 +73,7 @@ def talkAgain(author):
 
 @client.event
 async def on_message(message):
-  if message.author.bot:
+  if message.author.bot or not type(message.channel)==discord.TextChannel:
     return
   if message.author in delay:
     return

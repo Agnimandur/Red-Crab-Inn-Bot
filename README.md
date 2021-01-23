@@ -112,5 +112,8 @@ Place a CFD contract to short sell cryptocurrency! As above, the [all] and [$] k
 #### contracts
 View your ongoing contracts, and their current profit trajectories.
 
+#### net worth
+See all your current assets in an easy to read embed format.
+
 #### rank=[name]
 Find out your current net worth, and rank in the ongoing Cryptocurrency simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.

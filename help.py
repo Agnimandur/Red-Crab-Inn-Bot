@@ -42,6 +42,7 @@ def crypto_generic():
 - exchange rate
 - leaderboard
 - rank=[name]
+- net worth
 - contracts```""")
 
 def main_generic():
@@ -188,6 +189,8 @@ def crypto_help(text):
 - [h]. The time, in hours, that the contract will last before collection occurs. The default value is 24 (1 day), although you can make it anywhere from 0.1 (6 minutes) to 10000 (over a year).""")
     elif command.startswith('contract'):
       embed=make_embed(title="**Contracts**",description="Displays a list of your ongoing contracts, and the current profit of each contract. Use the `short` command to place a CFD and sell short on cryptocurrency!").add_field(name="**Parameters**",value="*None*")
+    elif command.startswith('net'):
+      embed=make_embed(title="**Net Worth**",description="Displays your current simulation assets in an easy to read format.").add_field(name="**Parameters**",value="*None*")
   except:
     pass
   return embed

@@ -190,7 +190,6 @@ async def reaper(message):
     if blitz:
       cooldown = BS
       towin = BP
-
     params = text[text.find('game')+5:].split(' ')
     success = True
     for p in params:
@@ -258,13 +257,13 @@ async def reaper(message):
     try:
       x = 0
       for member in message.mentions:
-        if roles[0] not in member.roles:
+        if roles[0] not in member.roles and not member.bot:
           await member.add_roles(roles[1])
           x += 1
       if x > 0:
         response = "Banning successful. If you'd like to appeal, complain to an admin."
       else:
-        response = "You can't ban a reaper-admin!"
+        response = "You can't ban a reaper-admin or a discord bot!"
     except:
       response = "Banning failed. Do it manually if necessary."
   elif text.startswith('unban') and (admin or message.author.guild_permissions.administrator) and len(message.mentions)>0:
