@@ -138,7 +138,8 @@ async def on_message(message):
         await re.set_permissions(banned,read_messages=True,send_messages=False)
         rd = await message.guild.create_text_channel(name='reaper-discussion',topic="It is recommended you do leaderboard,rank,timer commands in this channel to avoid clutter.",category=category)
         await rd.set_permissions(banned,read_messages=True,send_messages=False)
-        rbc = await message.guild.create_text_channel(name='reaper-bitcoin',topic="Buy and sell bitcoin in this channel!",slowmode_delay=2,category=category)
+        rc = await message.guild.create_text_channel(name='reaper-crypto',topic="Buy and sell cryptocurrency in this channel! Type join to enter!",slowmode_delay=2,category=category)
+        await rc.set_permissions(banned,read_messages=True,send_messages=False)
         for m in message.guild.members:
           if not m.bot and m.guild_permissions.administrator:
             await m.add_roles(reaperadmin)

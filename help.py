@@ -95,12 +95,16 @@ def reaper_help(text):
       embed=make_embed(title="**Begin Blitz Game**",description="Begin a blitz reaper game. These games are short, so expect to play it from beginning to end! At the end, a results graph will be displayed.").add_field(name="**Parameters**",value="""
 - [s]. The reap cooldown in seconds. The maximum is 500 seconds, and the minimum is 5 seconds. The default is 10 seconds.
 - [p]. The point target to reap in seconds. The maximum is 5000 points, and the minimum is 10 points. The default is 120 points.
-- [rng]. Either 0 or 1. If 0, then randomness (score multipliers and free reaps) is turned off.""")
+- [rng]. Either 0 or 1. If 0, then randomness (score multipliers and free reaps) is turned off.""").add_field(name="**Examples**",value="""
+- begin blitz game s=20 p=120 rng=0
+- begin blitz game p=500 s=5""")
     elif command.startswith('begin'):
       embed=make_embed(title="**Begin Game**",description="Begin a standard reaper game. These games are long, often taking days or even weeks.").add_field(name="**Parameters**",value="""
 - [h]. The reap cooldown in hours (decimals accepted). The maximum is 1000 hours, and the minimum is 0.003 hours. The default is 12 hours.
 - [p]. The point target to reap in seconds. The maximum is 10,000,000 points (almost 4 months!), and the minimum is 10 points. The default is 43200 (12 hours) points.
-- [rng]. Either 0 or 1. If 0, then randomness (score multipliers and free reaps) is turned off.""")
+- [rng]. Either 0 or 1. If 0, then randomness (score multipliers and free reaps) is turned off.""").add_field(name="**Examples**",value="""
+- begin game h=20 p=640000
+- begin game h=13.4 rng=0 p=10000""")
     elif command.startswith('adminify'):
       embed=make_embed(title="**Adminify**",description="Promote new reaper-admins.").add_field(name="**Parameters**",value="""
 - [users]. A list of @ed users who you want to promote.""")
@@ -182,7 +186,7 @@ def crypto_help(text):
 - [cur]. The cryptocurrency you want to short (either btc or eth).
 - [amt]. The amount of the cryptocurrency that you want to short.
 - [h]. The time, in hours, that the contract will last before collection occurs. The default value is 24 (1 day), although you can make it anywhere from 0.1 (6 minutes) to 10000 (over a year).""")
-    elif command=='contracts':
+    elif command.startswith('contract'):
       embed=make_embed(title="**Contracts**",description="Displays a list of your ongoing contracts, and the current profit of each contract. Use the `short` command to place a CFD and sell short on cryptocurrency!").add_field(name="**Parameters**",value="*None*")
   except:
     pass
