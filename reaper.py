@@ -408,11 +408,14 @@ async def reaper(message):
     response = "The current reap time is {points} seconds.".format(points=points)
   #print out a top10 current leaderboard
   elif text=='leaderboard':
+    #response = "This command is temporarily unavailable,"
     embed = leaderboardEmbed(message.guild,server,'reaper')
     try:
       await message.channel.send(embed=embed)
     except:
       await message.channel.send("The leaderboard is empty!")
+    wait = "WAIT "+str(message.author.id)
+    db[wait] = round(time.time())
     response = 200
   #get your rank
   elif text=='rank':
@@ -421,7 +424,9 @@ async def reaper(message):
     else:
       rankList = [x[1] for x in leaderboard(server,'reaper')]
       rank = rankList.index(int(yourID))+1
-      response = "Hi <@{author}>, your current score is {score} points. Your current rank in the game is {rank} out of {total} players.".format(author=yourID,score=db[yourInfo][1],rank=str(rank),total=str(len(rankList)))
+      wait = "WAIT "+str(message.author.id)
+      db[wait] = round(time.time())
+      response = "Hi <@{author}>, your current score is {score} points. Your rank in the game is {r} out of {t} players.".format(author=yourID,score=db[yourInfo][1],r=rank,t=len(rankList))
   #find the scores of other people
   elif text.startswith('rank=') and len(text)>8:
     try:

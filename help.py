@@ -8,8 +8,8 @@ def make_embed(title,description):
 def reaper_generic():
   return make_embed(title="**Game Commands**",description="Get information about a specific command with help [COMMAND_NAME]. The first row are reaper-admin only commands.").add_field(name="**Begin/End the game**",value = """
   ```
-- begin game [h] [p] [rng]
-- begin blitz game [s] [p] [rng]
+- begin game h=[h] p=[p] rng=[rng]
+- begin blitz game s=[s] p=[p] rng=[rng]
 - end game```""").add_field(name="**Game parameters**",value = """
   ```
 - h=[h]
@@ -34,9 +34,9 @@ def reaper_generic():
 def crypto_generic():
   return make_embed(title="**Cryptocurrency Simulator Commands**",description="Buy and sell bitcoin and ethereum at current market rates! Get information about a specific command with help [COMMAND_NAME].").add_field(name="**Make a transaction**",value = """
   ```
-- buy [btc] [eth]
-- sell [btc] [eth]
-- short [cur]=[amt] [h]```""").add_field(name="**Simulation**",value = """
+- buy btc=[btc] eth=[eth]
+- sell btc=[btc] eth=[eth]
+- short [cur]=[amt] h=[h]```""").add_field(name="**Simulation**",value = """
   ```
 - join
 - exchange rate
@@ -131,10 +131,10 @@ def reaper_help(text):
       embed=make_embed(title="**Next Reap**",description="Find the amount of time before you can next reap. Alternatively, you can find the next reap time of someone else.").add_field(name="**Parameters**",value="""
 - [name]. Optional. The person whose next reap time you want to find. Defaults to yourself.""")
     elif command.startswith('rank'):
-      embed=make_embed(title="**Rank**",description="Find your current rank and score in the game. Alternatively, you can find the score of someone else.").add_field(name="**Parameters**",value="""
+      embed=make_embed(title="**Rank**",description="Find your current rank and score in the game. Alternatively, you can find the score of someone else. This is an **expensive** command, meaning that you will be blocked from sending messages for another 20 seconds.").add_field(name="**Parameters**",value="""
 - [name]. Optional. The person whose score you want to find (must be at least 4 characters long). Defaults to yourself.""")
     elif command=='leaderboard':
-      embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 of the ongoing game in a leaderboard format.").add_field(name="**Parameters**",value="*None*")
+      embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 of the ongoing game in a leaderboard format. This is an **expensive** command, meaning that you will be blocked from sending messages for another 20 seconds.").add_field(name="**Parameters**",value="*None*")
     elif command.startswith('h'):
       embed=make_embed(title="**Hours**",description="Change the reap cooldown (in hours). This only works for standard games.").add_field(name="**Parameters**",value="""
 - [h]. The new cooldown.""")
@@ -174,13 +174,13 @@ def crypto_help(text):
 - sell btc=all eth=5. This would sell all your bitcoin and Ξ5.
 - sell btc=$35000. This would sell $35000 worth of bitcoin.""")
     elif command=='leaderboard':
-      embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 richest investors in the ongoing Bitcoin simulation.").add_field(name="**Parameters**",value="*None*")
+      embed=make_embed(title="**Leaderboard**",description="Diaplay the current top10 richest investors in the ongoing Bitcoin simulation. This is an **expensive** command, meaning that you will be blocked from sending messages for another 20 seconds.").add_field(name="**Parameters**",value="*None*")
     elif command=='join':
       embed=make_embed(title="**Join**",description="Join the bitcoin simulation. You start with a million dollars.").add_field(name="**Parameters**",value="*None*")
     elif command.find('rate') >= 0:
       embed=make_embed(title="**Exchange Rate**",description="Find the current bitcoin and ethereum exchange rate. This is updated every minute or so.").add_field(name="**Parameters**",value="*None*")
     elif command.startswith('rank'):
-      embed=make_embed(title="**Rank**",description="Find your current net worth and rank in the simulation. Alternatively, you can find the net worth of someone else.").add_field(name="**Parameters**",value="""
+      embed=make_embed(title="**Rank**",description="Find your current net worth and rank in the simulation. Alternatively, you can find the net worth of someone else. This is an **expensive** command, meaning that you will be blocked from sending messages for another 20 seconds.").add_field(name="**Parameters**",value="""
 - [name]. Optional. The person whose net worth you want to find (must be at least 4 characters long). Defaults to yourself.""")
     elif command.startswith('short'):
       embed=make_embed(title="**Short Cryptocurrency (via a CFD)**",description="This command allows you to place a Contract for Difference (a CFD). You agree to pay the difference between the cryptocurrencies price after some number of hours. If the price falls, you make a profit! Note that you lose access to the money in the CFD until the contract ends. If you go bankrupt at the end of a contract, [insert punishment here] will happen!").add_field(name="**Parameters**",value="""

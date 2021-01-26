@@ -159,11 +159,14 @@ async def crypto(message):
       await message.channel.send(embed=embed)
       response = 200
   elif text=='leaderboard':
+    response = "This command is temporarily unavailable."
     embed = leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
     try:
       await message.channel.send(embed=embed)
     except:
       await message.channel.send("The leaderboard is empty!")
+    wait = "WAIT "+str(message.author.id)
+    db[wait] = round(time.time())
     response = 200
   elif text=='net worth':
     embed = make_embed(title="**{user}'s Net Worth**".format(user=message.author.name),description="A list of your liquid assets. Use `contracts` to view your current contracts.").add_field(name="**US Dollars**",value='$'+str(round(db[key][0])),inline=True).add_field(name="**Bitcoin**",value='฿'+str(db[key][1]),inline=True).add_field(name="**Ethereum**",value='Ξ'+str(db[key][2]),inline=True)
@@ -172,7 +175,9 @@ async def crypto(message):
   elif text=='rank':
     rankList = [x[1] for x in leaderboard("CRYPTO "+server,'crypto')]
     rank = rankList.index(int(message.author.id))+1
-    response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}. Your current rank in the simulation is {rank} out of {total} players.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2],net=round(networth(key)),rank=str(rank),total=str(len(rankList)))
+    wait = "WAIT "+str(message.author.id)
+    db[wait] = round(time.time())
+    response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}. Your rank in the simulation is {r} out of {t} investors.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2],net=round(networth(key)),r=rank,t=len(rankList))
   elif text.startswith('rank=') and len(text)>8:
     try:
       search = message.content[5:]

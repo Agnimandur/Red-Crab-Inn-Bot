@@ -117,3 +117,7 @@ See all your current assets in an easy to read embed format.
 
 #### rank=[name]
 Find out your current net worth, and rank in the ongoing Cryptocurrency simulation! If the optional [name] parameter is provided, it finds the net worth of all the people whose name begins with [name]. [name] must be at least 4 characters long.
+
+
+#### Notes about Expensive Commands
+*Leaderboard* and *rank* are expensive commands, meaning that they hog discord API resources. You will be rate blocked for 20 seconds after using these commands.

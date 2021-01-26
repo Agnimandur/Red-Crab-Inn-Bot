@@ -7,7 +7,6 @@ from help import make_embed
 #build the leaderboard
 def leaderboard(prefix,game):
   temp = []
-  r = get_conversion()
   for key in db.prefix(prefix):
     #[score,user id]
     score = db[key][1] if game=='reaper' else networth(key)

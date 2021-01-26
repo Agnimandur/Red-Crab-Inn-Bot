@@ -5,18 +5,17 @@ import json
 import random
 from replit import db
 from keep_alive import keep_alive
-from threading import Timer
 from reaper import reaper
 from reaper import cache
 from help import main_help
 from crypto import crypto
+import time
 
 #set up the bot
 AGNIMANDUR = 482581806143766529
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents,activity=discord.Game(name="Reaper"))
-delay = set()
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -68,15 +67,14 @@ async def on_ready():
   db['ETHEREUM'] = 0
   print("Successful login as {name}".format(name=str(client.user)))
 
-def talkAgain(author):
-  delay.remove(author)
-
 @client.event
 async def on_message(message):
   if message.author.bot or not type(message.channel)==discord.TextChannel:
     return
-  if message.author in delay:
+  wait = "WAIT "+str(message.author.id)
+  if wait in db.keys() and round(time.time())-db[wait] < 20:
     return
+
   #determine the server this message was sent in
   try:
     game = "REAPER GAME "+str(message.guild.id)
@@ -86,9 +84,6 @@ async def on_message(message):
   
   if message.channel.name == 'reaper-crypto':
     response = await crypto(message)
-    delay.add(message.author)
-    t = Timer(3,talkAgain,[message.author])
-    t.start()
     if response == 200 or len(response) > 0:
       if response == 200:
         return
@@ -101,9 +96,6 @@ async def on_message(message):
 
     #get the bot's response and send it.
     if response == 200 or len(response) > 0:
-      delay.add(message.author)
-      t = Timer(3,talkAgain,[message.author])
-      t.start()
       if response == 200:
         return
       botMessage = await message.channel.send(response)
@@ -120,9 +112,12 @@ async def on_message(message):
   if message.content == '$reaper':
     reaperID = 0
     for c in message.guild.channels:
-      if c.name=='reaper':
-        reaperID = c.id
-        break
+      try:
+        if c.name=='reaper':
+          reaperID = c.id
+          break
+      except:
+        pass
     if reaperID != 0:
       await message.channel.send("Reaper channel already exists. Go to <#{reaperID}>.".format(reaperID=reaperID))
     elif not message.author.guild_permissions.administrator:
@@ -227,11 +222,6 @@ async def on_message(message):
     await message.channel.send(embed=embed)
   else:
     skip = True
-  
-  if not skip:
-    delay.add(message.author)
-    t = Timer(3,talkAgain,[message.author])
-    t.start()
 
 #My Discord Bot Token
 keep_alive() #it will always be online
