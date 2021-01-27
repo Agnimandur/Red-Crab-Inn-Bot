@@ -9,6 +9,7 @@ from reaper import reaper
 from reaper import cache
 from help import main_help
 from crypto import crypto
+from threading import Timer
 import time
 
 #set up the bot
@@ -16,6 +17,7 @@ AGNIMANDUR = 482581806143766529
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents,activity=discord.Game(name="Reaper"))
+delay = set()
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -67,9 +69,17 @@ async def on_ready():
   db['ETHEREUM'] = 0
   print("Successful login as {name}".format(name=str(client.user)))
 
+def reset(ID):
+  delay.remove(ID)
+
+def begin(ID):
+  delay.add(ID)
+  t = Timer(5,reset,[ID])
+  t.start()
+
 @client.event
 async def on_message(message):
-  if message.author.bot or not type(message.channel)==discord.TextChannel:
+  if message.author.bot or not type(message.channel)==discord.TextChannel or message.author.id in delay:
     return
   wait = "WAIT "+str(message.author.id)
   if wait in db.keys() and round(time.time())-db[wait] < 20:
@@ -85,6 +95,7 @@ async def on_message(message):
   if message.channel.name == 'reaper-crypto':
     response = await crypto(message)
     if response == 200 or len(response) > 0:
+      begin(message.author.id)
       if response == 200:
         return
       await message.channel.send(response)
@@ -93,9 +104,9 @@ async def on_message(message):
   if message.channel.name == 'reaper' or message.channel.name == 'reaper-discussion':
     #if this message is a reaper command, let reaper.py handle it.
     response,beginGame = await reaper(message)
-
     #get the bot's response and send it.
     if response == 200 or len(response) > 0:
+      begin(message.author.id)
       if response == 200:
         return
       botMessage = await message.channel.send(response)
