@@ -55,7 +55,7 @@ async def crypto(message):
   if text == 'join':
     if key not in db.keys():
       db[key] = (1000000.0,0,0)
-      response = "Hi {user}, welcome to the Red Crab Inn's Bitcoin simulator! You start with $1,000,000.".format(user=message.author.mention)
+      response = "Hi {user}, welcome to the Red Crab Inn's cryptocurrency simulator, where you can trade Bitcoin and Ethereum! You start with $1,000,000.".format(user=message.author.mention)
     else:
       response = "Hi {user}, you are already in the simulator!".format(user=message.author.mention)
     return response
