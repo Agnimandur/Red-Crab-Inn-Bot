@@ -73,7 +73,7 @@ async def crypto(message):
   elif text.startswith('buy '):
     params = text[4:].split(' ')
     r = await get_conversion()
-    ret = transaction(params,key,'buy')
+    ret = await transaction(params,key,'buy')
     if not ret['success']:
       return "Invalid use of the `buy` command!"
     
@@ -86,7 +86,7 @@ async def crypto(message):
   elif text.startswith('sell '):
     params = text[5:].split(' ')
     r = await get_conversion()
-    ret = transaction(params,key,'sell')
+    ret = await transaction(params,key,'sell')
     if not ret['success']:
       return "Invalid use of the `sell` command!"
 
