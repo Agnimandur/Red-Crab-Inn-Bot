@@ -409,24 +409,26 @@ async def reaper(message):
   #print out a top10 current leaderboard
   elif text=='leaderboard':
     #response = "This command is temporarily unavailable,"
-    embed = leaderboardEmbed(message.guild,server,'reaper')
-    try:
-      await message.channel.send(embed=embed)
-    except:
-      await message.channel.send("The leaderboard is empty!")
-    wait = "WAIT "+str(message.author.id)
-    db[wait] = round(time.time())
-    response = 200
+    #embed = leaderboardEmbed(message.guild,server,'reaper')
+    #try:
+      #await message.channel.send(embed=embed)
+    #except:
+      #await message.channel.send("The leaderboard is empty!")
+    #wait = "WAIT "+str(message.author.id)
+    #db[wait] = round(time.time())
+    #response = 200
+    response = "This command is temporarily disabled."
   #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():
       response = "Hi <@{author}>, make a reap to join the game!".format(author=yourID)
     else:
-      rankList = [x[1] for x in leaderboard(server,'reaper')]
-      rank = rankList.index(int(yourID))+1
+      #rankList = [x[1] for x in leaderboard(server,'reaper')]
+      #rank = rankList.index(int(yourID))+1
       wait = "WAIT "+str(message.author.id)
       db[wait] = round(time.time())
-      response = "Hi <@{author}>, your current score is {score} points. Your rank in the game is {r} out of {t} players.".format(author=yourID,score=db[yourInfo][1],r=rank,t=len(rankList))
+      #response = "Hi <@{author}>, your current score is {score} points. Your rank in the game is {r} out of {t} players.".format(author=yourID,score=db[yourInfo][1],r=rank,t=len(rankList))
+      response = "Hi <@{author}>, your current score is {score} points.".format(author=yourID,score=db[yourInfo][1])
   #find the scores of other people
   elif text.startswith('rank=') and len(text)>8:
     try:

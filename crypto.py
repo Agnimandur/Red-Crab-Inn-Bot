@@ -10,9 +10,9 @@ from leaderboard import leaderboardEmbed
 from help import crypto_help
 from help import make_embed
 
-def transaction(params,key,kind):
+async def transaction(params,key,kind):
   ret = {'btc':0,'eth':0,'success':True,'h':24}
-  r = get_conversion()
+  r = await get_conversion()
   for p in params:
     if p.startswith('btc='):
       try:
@@ -68,11 +68,11 @@ async def crypto(message):
     return ""
   
   if text=='exchange rate':
-    r = get_conversion()
+    r = await get_conversion()
     response = "The current Bitcoin exchange rate is ${btc}. The current Ethereum exchange rate is ${eth}.".format(btc=round(r[0]),eth=round(r[1]))
   elif text.startswith('buy '):
     params = text[4:].split(' ')
-    r = get_conversion()
+    r = await get_conversion()
     ret = transaction(params,key,'buy')
     if not ret['success']:
       return "Invalid use of the `buy` command!"
@@ -85,7 +85,7 @@ async def crypto(message):
       response = "Hi {user}, your transaction was successful! You now have ${cash} and ฿{btc} and Ξ{eth}.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2])
   elif text.startswith('sell '):
     params = text[5:].split(' ')
-    r = get_conversion()
+    r = await get_conversion()
     ret = transaction(params,key,'sell')
     if not ret['success']:
       return "Invalid use of the `sell` command!"
@@ -99,8 +99,8 @@ async def crypto(message):
   elif text.startswith('short'):
     params = text[6:].split(' ')
     success = True
-    r = get_conversion()
-    ret = transaction(params,key,'short')
+    r = await get_conversion()
+    ret = await transaction(params,key,'short')
     if not ret['success'] or (ret['eth'] > 0 and ret['btc'] > 0):
       return "Invalid use of the `short` command!"
     contracts = "CONTRACT "+key
@@ -130,7 +130,7 @@ async def crypto(message):
     if contracts not in db.keys() or len(db[contracts])==0:
       response = "You have no active contracts!"
     else:
-      r = get_conversion()
+      r = await get_conversion()
       temp = db[contracts]
       temp2 = []
       currentTime = round(time.time())
@@ -160,24 +160,26 @@ async def crypto(message):
       response = 200
   elif text=='leaderboard':
     response = "This command is temporarily unavailable."
-    embed = leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
-    try:
-      await message.channel.send(embed=embed)
-    except:
-      await message.channel.send("The leaderboard is empty!")
-    wait = "WAIT "+str(message.author.id)
-    db[wait] = round(time.time())
-    response = 200
+    #embed = leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
+    #try:
+      #await message.channel.send(embed=embed)
+    #except:
+      #await message.channel.send("The leaderboard is empty!")
+    #wait = "WAIT "+str(message.author.id)
+    #db[wait] = round(time.time())
+    #response = 200
   elif text=='net worth':
     embed = make_embed(title="**{user}'s Net Worth**".format(user=message.author.name),description="A list of your liquid assets. Use `contracts` to view your current contracts.").add_field(name="**US Dollars**",value='$'+str(round(db[key][0])),inline=True).add_field(name="**Bitcoin**",value='฿'+str(db[key][1]),inline=True).add_field(name="**Ethereum**",value='Ξ'+str(db[key][2]),inline=True)
     await message.channel.send(embed=embed)
     response = 200
   elif text=='rank':
-    rankList = [x[1] for x in leaderboard("CRYPTO "+server,'crypto')]
-    rank = rankList.index(int(message.author.id))+1
-    wait = "WAIT "+str(message.author.id)
-    db[wait] = round(time.time())
-    response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}. Your rank in the simulation is {r} out of {t} investors.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2],net=round(networth(key)),r=rank,t=len(rankList))
+    #rankList = [x[1] for x in leaderboard("CRYPTO "+server,'crypto')]
+    #rank = rankList.index(int(message.author.id))+1
+    #wait = "WAIT "+str(message.author.id)
+    #db[wait] = round(time.time())
+    #response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}. Your rank in the simulation is {r} out of {t} investors.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2],net=round(nw),r=rank,t=len(rankList))
+    nw = await networth(key)
+    response = "Hi {user}, you have ${cash} and ฿{btc} and Ξ{eth}. Your current net worth is ${net}.".format(user=message.author.mention,cash=round(db[key][0]),btc=db[key][1],eth=db[key][2],net=round(nw))
   elif text.startswith('rank=') and len(text)>8:
     try:
       search = message.content[5:]
@@ -189,7 +191,8 @@ async def crypto(message):
           hisName = member.name if member.nick==None else member.nick
           #check if they're in the game or not
           try:
-            response += "{name}'s current net worth is ${net}.\n".format(name=hisName,net=round(networth(hisInfo)))
+            nw = await networth(hisInfo)
+            response += f"{hisName}'s current net worth is ${round(nw)}.\n"
           except:
             response += hisName + " has not entered the simulation yet.\n"
       else:
