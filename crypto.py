@@ -9,6 +9,7 @@ from leaderboard import leaderboard
 from leaderboard import leaderboardEmbed
 from help import crypto_help
 from help import make_embed
+AGNIMANDUR = 482581806143766529
 
 async def transaction(params,key,kind):
   ret = {'btc':0,'eth':0,'success':True,'h':24}
@@ -159,21 +160,24 @@ async def crypto(message):
       await message.channel.send(embed=embed)
       response = 200
   elif text=='leaderboard':
-    response = "This command is temporarily unavailable."
-    #embed = leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
-    #try:
-      #await message.channel.send(embed=embed)
-    #except:
-      #await message.channel.send("The leaderboard is empty!")
-    #wait = "WAIT "+str(message.author.id)
-    #db[wait] = round(time.time())
-    #response = 200
+    if message.author.id==AGNIMANDUR:
+      embed = await leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
+      try:
+        await message.channel.send(embed=embed)
+      except:
+        await message.channel.send("The leaderboard is empty!")
+      wait = "WAIT "+str(message.author.id)
+      db[wait] = round(time.time())
+      response = 200
+    else:
+      response = "This command is temporarily unavailable."
   elif text=='net worth':
     embed = make_embed(title="**{user}'s Net Worth**".format(user=message.author.name),description="A list of your liquid assets. Use `contracts` to view your current contracts.").add_field(name="**US Dollars**",value='$'+str(round(db[key][0])),inline=True).add_field(name="**Bitcoin**",value='฿'+str(db[key][1]),inline=True).add_field(name="**Ethereum**",value='Ξ'+str(db[key][2]),inline=True)
     await message.channel.send(embed=embed)
     response = 200
   elif text=='rank':
-    #rankList = [x[1] for x in leaderboard("CRYPTO "+server,'crypto')]
+    #board = await leaderboard("CRYPTO "+server,'crypto')
+    #rankList = [x[1] for x in board]
     #rank = rankList.index(int(message.author.id))+1
     #wait = "WAIT "+str(message.author.id)
     #db[wait] = round(time.time())

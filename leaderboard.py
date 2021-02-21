@@ -5,18 +5,22 @@ from conversion import networth
 from help import make_embed
 
 #build the leaderboard
-def leaderboard(prefix,game):
+async def leaderboard(prefix,game):
   temp = []
   for key in db.prefix(prefix):
     #[score,user id]
-    score = db[key][1] if game=='reaper' else networth(key)
+    if game=='reaper':
+      score = db[key][1]
+    else:
+      score = await networth(key)
+    
     userID = int(key[len(prefix)+1:])
     temp.append([score,userID])
   temp.sort(reverse=True)
   return temp
 
-def leaderboardEmbed(guild,prefix,game):
-  rankList = leaderboard(prefix,game)
+async def leaderboardEmbed(guild,prefix,game):
+  rankList = await leaderboard(prefix,game)
   if len(rankList)==0:
     return None
   ranks = ""

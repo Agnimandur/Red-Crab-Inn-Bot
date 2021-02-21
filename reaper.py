@@ -61,8 +61,8 @@ async def endgame(message):
   game = "REAPER GAME "+server
   blitz = True if "BLITZ "+game in db.keys() else False
 
-  rankList = leaderboard(server,'reaper')
-  embed = leaderboardEmbed(message.guild,server,'reaper')
+  rankList = await leaderboard(server,'reaper')
+  embed = await leaderboardEmbed(message.guild,server,'reaper')
   champion = AGNIMANDUR
   if len(rankList)>0:
     champion = rankList[0][1]
@@ -408,16 +408,17 @@ async def reaper(message):
     response = "The current reap time is {points} seconds.".format(points=points)
   #print out a top10 current leaderboard
   elif text=='leaderboard':
-    #response = "This command is temporarily unavailable,"
-    #embed = leaderboardEmbed(message.guild,server,'reaper')
-    #try:
-      #await message.channel.send(embed=embed)
-    #except:
-      #await message.channel.send("The leaderboard is empty!")
-    #wait = "WAIT "+str(message.author.id)
-    #db[wait] = round(time.time())
-    #response = 200
-    response = "This command is temporarily disabled."
+    if message.author.id==AGNIMANDUR:
+      embed = await leaderboardEmbed(message.guild,server,'reaper')
+      try:
+        await message.channel.send(embed=embed)
+      except:
+        await message.channel.send("The leaderboard is empty!")
+      wait = "WAIT "+str(message.author.id)
+      db[wait] = round(time.time())
+      response = 200
+    else:
+      response = "This command is temporarily unavailable,"
   #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():

@@ -10,6 +10,7 @@ from reaper import cache
 from help import main_help
 from crypto import crypto
 from threading import Timer
+from orzfactor import orzfactor
 import time
 
 #set up the bot
@@ -231,6 +232,8 @@ async def on_message(message):
   elif message.content.lower().startswith('$help'):
     embed = main_help(message.content.lower())
     await message.channel.send(embed=embed)
+  elif message.content.lower().startswith('$orz rating '):
+    await orzfactor(message)
   else:
     skip = True
 
