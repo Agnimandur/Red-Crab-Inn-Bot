@@ -132,7 +132,7 @@ async def on_message(message):
         pass
     if reaperID != 0:
       await message.channel.send("Reaper channel already exists. Go to <#{reaperID}>.".format(reaperID=reaperID))
-    elif not message.author.guild_permissions.administrator:
+    elif not message.author.guild_permissions.administrator and not message.author.id==AGNIMANDUR:
       await message.channel.send("Only an admin can do this!")
     else:
       #if we can't, its because the bot doesn't have enough permissions.
@@ -157,7 +157,7 @@ async def on_message(message):
         await message.channel.send(response)
   #remove the bot from your server
   if message.content == '$leave':
-    if not message.author.guild_permissions.administrator:
+    if not message.author.guild_permissions.administrator and not message.author.id==AGNIMANDUR:
       await message.channel.send("Only an admin can do this!")
       return
     g = message.guild
