@@ -378,15 +378,6 @@ async def reaper(message):
       if yourInfo in db.keys():
         newScore += db[yourInfo][1]
       newTime = 0 if free else currentTime
-      
-      #send results
-      bonus = ""
-      if modifier > 1:
-        bonus = "You also got a {mod}x reap".format(mod=modifier)
-        if free:
-          bonus += " and a free reap!!"
-        bonus += "!"
-      await message.channel.send("Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score)+bonus)
 
       #update database with your time and score
       try:
@@ -402,6 +393,16 @@ async def reaper(message):
           await endgame(message)
       except:
         pass
+      
+      #send results
+      bonus = ""
+      if modifier > 1:
+        bonus = "You also got a {mod}x reap".format(mod=modifier)
+        if free:
+          bonus += " and a free reap!!"
+        bonus += "!"
+      await message.channel.send("Congratulations <@{author}>, your reap earned {score} points.".format(author=message.author.id,score=score)+bonus)
+
   #get the current reap time
   elif text=='timer':
     points = (currentTime - db[game][0])//1000
