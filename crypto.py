@@ -160,7 +160,12 @@ async def crypto(message):
       await message.channel.send(embed=embed)
       response = 200
   elif text=='leaderboard':
-    if message.author.id==AGNIMANDUR:
+    admin = False
+    for role in message.author.roles:
+      if role.name=='reaper-admin':
+        admin = True
+        break
+    if admin:
       embed = await leaderboardEmbed(message.guild,"CRYPTO " + server,'crypto')
       try:
         await message.channel.send(embed=embed)
@@ -170,7 +175,7 @@ async def crypto(message):
       db[wait] = round(time.time())
       response = 200
     else:
-      response = "This command is temporarily unavailable."
+      response = "This command is only available to reaper admins."
   elif text=='net worth':
     embed = make_embed(title="**{user}'s Net Worth**".format(user=message.author.name),description="A list of your liquid assets. Use `contracts` to view your current contracts.").add_field(name="**US Dollars**",value='$'+str(round(db[key][0])),inline=True).add_field(name="**Bitcoin**",value='฿'+str(db[key][1]),inline=True).add_field(name="**Ethereum**",value='Ξ'+str(db[key][2]),inline=True)
     await message.channel.send(embed=embed)

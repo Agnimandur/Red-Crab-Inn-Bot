@@ -408,7 +408,7 @@ async def reaper(message):
     response = "The current reap time is {points} seconds.".format(points=points)
   #print out a top10 current leaderboard
   elif text=='leaderboard':
-    if message.author.id==AGNIMANDUR:
+    if admin:
       embed = await leaderboardEmbed(message.guild,server,'reaper')
       try:
         await message.channel.send(embed=embed)
@@ -418,7 +418,7 @@ async def reaper(message):
       db[wait] = round(time.time())
       response = 200
     else:
-      response = "This command is temporarily unavailable,"
+      response = "This command is only available to reaper admins."
   #get your rank
   elif text=='rank':
     if yourInfo not in db.keys():

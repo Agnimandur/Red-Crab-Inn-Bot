@@ -238,5 +238,7 @@ async def on_message(message):
     skip = True
 
 #My Discord Bot Token
-keep_alive() #it will always be online
+
+#Currently Using REPL's ALWAYS ON!!!
+#keep_alive() #it will always be online
 client.run(os.getenv('TOKEN'))

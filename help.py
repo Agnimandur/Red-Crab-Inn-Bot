@@ -28,7 +28,7 @@ def reaper_generic():
 - timer
 - nextreap=[name]
 - rank=[name]
-- leaderboard```
+- leaderboard (admin only)```
   """)
 
 def crypto_generic():
@@ -40,7 +40,7 @@ def crypto_generic():
   ```
 - join
 - exchange rate
-- leaderboard
+- leaderboard (admin only)
 - rank=[name]
 - net worth
 - contracts```""")

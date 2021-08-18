@@ -81,7 +81,7 @@ The number of points you get is the number of seconds between the time of your r
 Find the current point value of a reap (in milliseconds).
 
 #### leaderboard
-Find the current top10 leaderboard in an ongoing game, displayed as a fancy Embed!
+Find the current top10 leaderboard in an ongoing game, displayed as a fancy Embed! Only **reaper admins** can use this command!
 <img alt="leaderboard example" src="leaderboard.PNG">
 
 #### nextreap=[name]
@@ -101,7 +101,7 @@ Join the ongoing cryptocurrency simulation with a million dollars.
 Find the current exchange rate of bitcoins and ethereums to US dollars. The rate is updated every minute!
 
 #### leaderboard
-Find the current top10 leaderboard of the server's most successful whales!
+Find the current top10 leaderboard of the server's most successful whales! Only **reaper admins** can use this command!
 
 #### buy/sell [btc] [eth]
 If possible, buy or sell the amount specified by the parameter tags. if [all] is passed in, it buys or sells as much as possible of the specified cryptocurrency. For example, *sell btc=2 eth=all* would sell 2 of your bitcoins and all of your ethereum. if a dollar sign is included, the bot automatically converts the dollar amount to the cryptocurrency in question. For example, *buy btc=$10000* would buy $10000 US dollars worth of bitcoin.
