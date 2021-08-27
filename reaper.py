@@ -402,6 +402,17 @@ async def reaper(message):
           await endgame(message)
       except:
         pass
+  elif text.startswith('reap') and len(text)<=6:
+    reap_channel = None
+    try:
+      incat = message.channel.category.channels
+      for c in incat:
+        if c.name=='reaper':
+          reap_channel = c
+          break
+    except:
+      pass
+    await message.channel.send("Hi <@{author}>, you can only reap in the {reaper} channel!".format(author=message.author.id,reaper=f'<#{reap_channel.id}>' if reap_channel!=None else '#reaper'))
   #get the current reap time
   elif text=='timer':
     points = (currentTime - db[game][0])//1000
