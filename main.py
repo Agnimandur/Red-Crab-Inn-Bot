@@ -83,7 +83,7 @@ async def on_message(message):
   if message.author.bot or not type(message.channel)==discord.TextChannel or message.author.id in delay:
     return
   wait = "WAIT "+str(message.author.id)
-  if wait in db.keys() and round(time.time())-db[wait] < 20:
+  if wait in db.keys() and round(time.time())-db[wait] < 8:
     return
 
   #determine the server this message was sent in
